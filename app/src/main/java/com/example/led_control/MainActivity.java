@@ -1,7 +1,7 @@
 package com.example.led_control;
 
 import android.Manifest;
-import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -15,8 +15,8 @@ import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.method.ScrollingMovementMethod;
@@ -26,9 +26,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -38,10 +39,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    public MainActivity() {}
-
     private static final String TAG = "LED-ControlAPP";
-
     private final static int REQUEST_ENABLE_BT = 1;
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
     private final Handler handler = new Handler();
@@ -53,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     BluetoothAdapter btAdapter;
     BluetoothLeScanner btScanner;
     BluetoothGatt bluetoothGatt;
+    Boolean btScanning = false;
 
     ArrayList<BluetoothDevice> devicesDiscovered = new ArrayList<>();
     int deviceIndex = 0;
@@ -67,25 +66,7 @@ public class MainActivity extends AppCompatActivity {
     Button btn;
 
 
-    private final ScanCallback leScanCallback = new ScanCallback() {
-        @Override
-        public void onScanResult(int callbackType, ScanResult result) {
-            BluetoothDevice device = result.getDevice();
-
-            if (!devicesDiscovered.contains(device)) {
-                textView.append("Index: " + deviceIndex + ", Device Name: " + result.getDevice().getName() + " rssi: " + result.getRssi() + "\n");
-                devicesDiscovered.add(result.getDevice());
-                deviceIndex++;
-            }
-            // auto scroll for text view
-            final int scrollAmount = textView.getLayout().getLineTop(textView.getLineCount()) - textView.getHeight();
-            // if there is no need to scroll, scrollAmount will be <=0
-            if (scrollAmount > 0) {
-                textView.scrollTo(0, scrollAmount);
-            }
-        }
-    };
-
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,12 +94,6 @@ public class MainActivity extends AppCompatActivity {
         //stopScanningButton.setOnClickListener(v -> stopScanning());
         stopScanningButton.setVisibility(View.INVISIBLE);
 
-        if (!hasBlePermissions(this) ) {
-            requestBlePermissions(this, 1);
-        }
-
-        areLocationServicesEnabled(this);
-
         btManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         btAdapter = btManager.getAdapter();
         btScanner = btAdapter.getBluetoothLeScanner();
@@ -126,6 +101,17 @@ public class MainActivity extends AppCompatActivity {
         if (btAdapter != null && !btAdapter.isEnabled()) {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+        }
+
+        // Make sure we have access coarse location enabled, if not, prompt the user to enable it
+        if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("This app needs location access");
+            builder.setMessage("Please grant location access so this app can detect peripherals.");
+            builder.setPositiveButton(android.R.string.ok, null);
+            builder.setOnDismissListener(dialog -> requestPermissions(new String[]{
+                    Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_COARSE_LOCATION));
+            builder.show();
         }
 
         startScanningButton.setOnClickListener(v -> {
@@ -145,68 +131,37 @@ public class MainActivity extends AppCompatActivity {
                 AsyncTask.execute(() -> btScanner.stopScan(leScanCallback));
             }, SCAN_PERIOD);
         });
-
-        //BluetoothDevice device = devices.get(0);//TODO nicht erstes sondern ausgewähltes device
-        //connectBtn.setEnabled(device != null); //TODO bei ausgwählen des devices wieder aufrufen
-        connectToDevice.setText("Verbinden");
-        connectToDevice.setOnClickListener(v -> {
-            BluetoothDevice device;
-            if (connectToDevice.getText().equals("Verbinden")) {
-                device = devicesDiscovered.get(0);//TODO remove später
-                bluetoothGatt = device.connectGatt(this,false, serverCallback);
-                connectToDevice.setText("Trennen");
-            }
-            else {
-                device = null;
-                connectToDevice.setText("Verbinden");
-            }
-        });
     }
 
-    private void resetFoundDevices() {
-        textView.setText("");
-        devicesDiscovered.clear();
-        deviceIndex = 0;
-    }
+    // Device scan callback.
+    private final ScanCallback leScanCallback = new ScanCallback() {
+        @Override
+        public void onScanResult(int callbackType, ScanResult result) {
+            BluetoothDevice device = result.getDevice();
 
-    public void areLocationServicesEnabled(Context context) {
-        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        try {
-            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            if (!devicesDiscovered.contains(device)) {
+                textView.append("Index: " + deviceIndex + ", Device Name: " + result.getDevice().getName() + " rssi: " + result.getRssi() + "\n");
+                devicesDiscovered.add(result.getDevice());
+                deviceIndex++;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            // auto scroll for text view
+            final int scrollAmount = textView.getLayout().getLineTop(textView.getLineCount()) - textView.getHeight();
+            // if there is no need to scroll, scrollAmount will be <=0
+            if (scrollAmount > 0) {
+                textView.scrollTo(0, scrollAmount);
+            }
         }
-    }
+    };
 
-    public boolean hasBlePermissions(Context mContext) {
-        return ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-    }
+    // Device connect call back
+    private final BluetoothGattCallback btleGattCallback = new BluetoothGattCallback() {
 
-    public void requestBlePermissions(final Activity activity, int requestCode) {
-        ActivityCompat.requestPermissions(activity,
-                new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                requestCode);
-    }
+        @Override
+        public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
+            // this will get called anytime you perform a read or write characteristic operation
+            MainActivity.this.runOnUiThread(() -> textView.append("device read or wrote to\n"));
+        }
 
-    public void connectToDeviceSelected() {
-        textView.append("Trying to connect to device at index: " + deviceIndexInput.getText() + "\n");
-        int deviceSelected = Integer.parseInt(deviceIndexInput.getText().toString());
-        bluetoothGatt = devicesDiscovered.get(deviceSelected).connectGatt(this, false, serverCallback);
-    }
-
-    public void disconnectDeviceSelected() {
-        textView.append("Disconnecting from device\n");
-        bluetoothGatt.disconnect();
-    }
-
-    private void btnclick() {
-        writeCharacteristic(charac, "off");
-    }
-
-    BluetoothGattCallback serverCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(final BluetoothGatt gatt, final int status, final int newState) {
             // this will get called when a device connects or disconnects
@@ -235,33 +190,23 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
         }
+
         @Override
         public void onServicesDiscovered(final BluetoothGatt gatt, final int status) {
             // this will get called after the client initiates a 			BluetoothGatt.discoverServices() call
             MainActivity.this.runOnUiThread(() -> textView.append("device services have been discovered\n"));
             displayGattServices(bluetoothGatt.getServices());
         }
-        @Override public void onCharacteristicRead(BluetoothGatt gatt,
-                                                   BluetoothGattCharacteristic characteristic,
-                                                   int status) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                broadcastUpdate(characteristic);
-            }
-        }
-        @Override public void onCharacteristicWrite(BluetoothGatt gatt,
-                                                    BluetoothGattCharacteristic characteristic,
-                                                    int status) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                broadcastUpdate(characteristic);
-            }
-        }
 
         @Override
-        public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
-            // this will get called anytime you perform a read or write characteristic operation
-            MainActivity.this.runOnUiThread(() -> textView.append("device read or wrote to\n"));
+        // Result of a characteristic read operation
+        public void onCharacteristicRead(BluetoothGatt gatt,
+                                         BluetoothGattCharacteristic characteristic,
+                                         int status) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                broadcastUpdate(characteristic);
+            }
         }
-
     };
 
     private void broadcastUpdate(final BluetoothGattCharacteristic characteristic) {
@@ -269,30 +214,69 @@ public class MainActivity extends AppCompatActivity {
         System.out.println(characteristic.getUuid());
     }
 
-    private void displayGattServices(List<BluetoothGattService> gattServices) {
-        if (gattServices == null) return;
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        ActivityCompat.requestPermissions(
+                this,
+                new String[]
+                        {
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION,
+                                Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                                Manifest.permission.READ_EXTERNAL_STORAGE
+                        }, 0);
 
-        // Loops through available GATT Services.
-        for (BluetoothGattService gattService : gattServices) {
-
-            final String uuid = gattService.getUuid().toString();
-            System.out.println("Service discovered: " + uuid);
-            MainActivity.this.runOnUiThread(() -> textView.append("Service disovered: " + uuid + "\n"));
-            new ArrayList<HashMap<String, String>>();
-            List<BluetoothGattCharacteristic> gattCharacteristics =
-                    gattService.getCharacteristics();
-
-            // Loops through available Characteristics.
-            for (BluetoothGattCharacteristic gattCharacteristic :
-                    gattCharacteristics) {
-
-                charac = gattCharacteristic;
-                final String charUuid = gattCharacteristic.getUuid().toString();
-                System.out.println("Characteristic discovered for service: " + charUuid);
-                MainActivity.this.runOnUiThread(() -> textView.append("Characteristic discovered for service: " + charUuid + "\n"));
-
+        if (requestCode == PERMISSION_REQUEST_COARSE_LOCATION) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                System.out.println("coarse location permission granted");
+            } else {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Functionality limited");
+                builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons when in the background.");
+                builder.setPositiveButton(android.R.string.ok, null);
+                builder.setOnDismissListener(dialog -> {
+                });
+                builder.show();
             }
         }
+    }
+
+    /*public void startScanning() {
+        System.out.println("start scanning");
+        btScanning = true;
+        deviceIndex = 0;
+        devicesDiscovered.clear();
+        textView.setText("");
+        textView.append("Started Scanning\n");
+        startScanningButton.setVisibility(View.INVISIBLE);
+        stopScanningButton.setVisibility(View.VISIBLE);
+        AsyncTask.execute(() -> btScanner.startScan(leScanCallback));
+
+        handler.postDelayed(this::stopScanning, SCAN_PERIOD);
+    }*/
+
+    /*public void stopScanning() {
+        System.out.println("stopping scanning");
+        textView.append("Stopped Scanning\n");
+        btScanning = false;
+        startScanningButton.setVisibility(View.VISIBLE);
+        stopScanningButton.setVisibility(View.INVISIBLE);
+        AsyncTask.execute(() -> btScanner.stopScan(leScanCallback));
+    }*/
+
+    public void connectToDeviceSelected() {
+        textView.append("Trying to connect to device at index: " + deviceIndexInput.getText() + "\n");
+        int deviceSelected = Integer.parseInt(deviceIndexInput.getText().toString());
+        bluetoothGatt = devicesDiscovered.get(deviceSelected).connectGatt(this, false, btleGattCallback);
+    }
+
+    public void disconnectDeviceSelected() {
+        textView.append("Disconnecting from device\n");
+        bluetoothGatt.disconnect();
+    }
+
+    private void btnclick() {
+        writeCharacteristic(charac, "off");
     }
 
     public void writeCharacteristic(BluetoothGattCharacteristic characteristic,
@@ -315,11 +299,30 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void close() {
-        if (bluetoothGatt == null) {
-            return;
+
+    private void displayGattServices(List<BluetoothGattService> gattServices) {
+        if (gattServices == null) return;
+
+        // Loops through available GATT Services.
+        for (BluetoothGattService gattService : gattServices) {
+
+            final String uuid = gattService.getUuid().toString();
+            System.out.println("Service discovered: " + uuid);
+            MainActivity.this.runOnUiThread(() -> textView.append("Service disovered: "+uuid+"\n"));
+            new ArrayList<HashMap<String, String>>();
+            List<BluetoothGattCharacteristic> gattCharacteristics =
+                    gattService.getCharacteristics();
+
+            // Loops through available Characteristics.
+            for (BluetoothGattCharacteristic gattCharacteristic :
+                    gattCharacteristics) {
+
+                charac = gattCharacteristic;
+                final String charUuid = gattCharacteristic.getUuid().toString();
+                System.out.println("Characteristic discovered for service: " + charUuid);
+                MainActivity.this.runOnUiThread(() -> textView.append("Characteristic discovered for service: "+charUuid+"\n"));
+
+            }
         }
-        bluetoothGatt.close();
-        bluetoothGatt = null;
     }
 }
