@@ -31,13 +31,20 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.example.led_control.btconnect.BTConnectFragment;
+import com.example.led_control.btconnect.BTConnectPresenter;
+import com.example.led_control.home.HomeFragment;
+import com.example.led_control.home.HomePresenter;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainContract.View {
+
+
 
     private static final String TAG = "LED-ControlAPP";
     private final static int REQUEST_ENABLE_BT = 1;
@@ -72,6 +79,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Setup Presenter
+        HomePresenter homePresenter = new HomePresenter(this);
+        MainPresenter mainPresenter = new MainPresenter(this);
+        BTConnectPresenter btConnectPresenter = new BTConnectPresenter(this);
+
+        //Setup Fragments
+        HomeFragment homeFragment = new HomeFragment(mainPresenter, homePresenter);
+        BTConnectFragment btConnectFragment = new BTConnectFragment(mainPresenter, btConnectPresenter);
+
+        // set homeFragment
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                    btConnectFragment).commit();
+        }
+
+/*
         textView = findViewById(R.id.TextView);
         textView.setMovementMethod(new ScrollingMovementMethod());
         deviceIndexInput = findViewById(R.id.InputIndex);
@@ -130,9 +153,9 @@ public class MainActivity extends AppCompatActivity {
                 startScanningButton.setEnabled(true);
                 AsyncTask.execute(() -> btScanner.stopScan(leScanCallback));
             }, SCAN_PERIOD);
-        });
+        });*/
     }
-
+/*
     // Device scan callback.
     private final ScanCallback leScanCallback = new ScanCallback() {
         @Override
@@ -263,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
         stopScanningButton.setVisibility(View.INVISIBLE);
         AsyncTask.execute(() -> btScanner.stopScan(leScanCallback));
     }*/
-
+/*
     public void connectToDeviceSelected() {
         textView.append("Trying to connect to device at index: " + deviceIndexInput.getText() + "\n");
         int deviceSelected = Integer.parseInt(deviceIndexInput.getText().toString());
@@ -324,5 +347,5 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }
-    }
+    }*/
 }

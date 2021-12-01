@@ -8,11 +8,14 @@
         <entry key="..\:/Users/Tim/AndroidStudioProjects/LEDControl/app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="..\:/Users/Tim/AndroidStudioProjects/LEDControl/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.3828125" />
         <entry key="..\:/Users/Tim/AndroidStudioProjects/LEDControl/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.3828125" />
+        <entry key="..\:/Users/Tim/Desktop/LEDControl-App/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/Users/Tim/Desktop/LEDControl-App/app/src/main/res/layout/fragment_btconnect.xml" value="0.34646739130434784" />
+        <entry key="..\:/Users/Tim/Desktop/LEDControl-App/app/src/main/res/layout/fragment_home.xml" value="0.34646739130434784" />
         <entry key="..\:/Users/Tim/Desktop/LEDControl/LEDControl/app/src/main/res/layout/activity_main.xml" value="0.3555253623188406" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="11" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
