@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     BluetoothManager btManager;
     BluetoothAdapter btAdapter;
     BluetoothLeScanner btScanner;
+    HomeFragment homeFragment;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         BTConnectPresenter btConnectPresenter = new BTConnectPresenter(this);
 
         //Setup Fragments
-        HomeFragment homeFragment = new HomeFragment(mainPresenter, homePresenter);
+        homeFragment = new HomeFragment(mainPresenter, homePresenter);
         BTConnectFragment btConnectFragment = new BTConnectFragment(mainPresenter, btConnectPresenter);
 
         // set homeFragment
@@ -99,5 +100,13 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                 builder.show();
             }
         }
+    }
+
+    @Override
+    public void navigateToHomeFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, homeFragment)
+                .commit();
     }
 }

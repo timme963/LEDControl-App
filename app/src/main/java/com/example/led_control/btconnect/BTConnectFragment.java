@@ -30,6 +30,9 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
     Button stopScan;
     ImageButton btButton;
     LinearLayout deviceList;
+    BluetoothDevice connectedDevice;
+    boolean btScan;
+    boolean connected = false;
 
     public BTConnectFragment(MainPresenter mainPresenter, BTConnectPresenter btConnectPresenter) {
         this.mainPresenter = mainPresenter;
@@ -62,40 +65,51 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
         stopScan.setVisibility(View.INVISIBLE);
         deviceList = view.findViewById(R.id.BTDeviceList);
 
+        if (btConnectPresenter.btAdapter.isEnabled()) {
+            btButton.setBackgroundColor((int) 0xFF1C9191);
+        } else {
+            btButton.setBackgroundColor((int) 0xFFD0D3D3);
+        }
+
         setupOnListener();
     }
 
     private void setupOnListener() {
         scan.setOnClickListener(v -> {
             deviceList.removeAllViews();
-            //textView.setText("");
-            //Log.i(TAG, "Suche nach BLE Geräte > beginn");
-            //textView.append("Started Scanning\n");
+            if (connectedDevice != null) {
+                showDevice(connectedDevice);
+            }
+            btScan = true;
             scan.setVisibility(View.INVISIBLE);
             stopScan.setVisibility(View.VISIBLE);
             btConnectPresenter.startScan();
 
 
             handler.postDelayed(() -> {
-                //Log.i(TAG, "Suche nach BLE Geräte > ende");
-                //textView.append("Stop Scanning\n");
                 scan.setVisibility(View.VISIBLE);
                 stopScan.setVisibility(View.INVISIBLE);
                 btConnectPresenter.stopScan();
+                btScan = false;
 
             }, SCAN_PERIOD);
         });
 
         stopScan.setOnClickListener(v -> {
-            //System.out.println("stopping scanning");
-            //textView.append("Stopped Scanning\n");
             scan.setVisibility(View.VISIBLE);
             stopScan.setVisibility(View.INVISIBLE);
             btConnectPresenter.stopScan();
+            btScan = false;
         });
 
         btButton.setOnClickListener(v -> {
-
+            if (!btConnectPresenter.btAdapter.isEnabled()) {
+                btButton.setBackgroundColor((int) 0xFF1C9191);
+                btConnectPresenter.btAdapter.enable();
+            } else {
+                btButton.setBackgroundColor((int) 0xFFD0D3D3);
+                btConnectPresenter.btAdapter.disable();
+            }
         });
     }
 
@@ -109,20 +123,36 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
     public void showDevice(BluetoothDevice device) {
         LinearLayout layout = new LinearLayout(getActivity());
         Button btn = new Button(getActivity());
-        btn.setText("Connect");
+        if (device == connectedDevice) {
+            btn.setText("Disconnect");
+        } else {
+            btn.setText("Connect");
+        }
         TextView txt = new TextView(getActivity());
-        txt.setText("Device Name: " + device.getName());
+        txt.setText(device.getName());
+        txt.setPadding(10,0,50,0);
         layout.addView(txt);
         layout.addView(btn);
         deviceList.addView(layout);
         btn.setOnClickListener(v -> {
             if (btn.getText() == "Connect") {
-                btConnectPresenter.connectToDeviceSelected(device);
+                connectedDevice = device;
+                connected = btConnectPresenter.connectToDeviceSelected(device);
                 btn.setText("Disconnect");
+                if (connected && !btScan) {
+                    mainPresenter.navigateToHomeFragment();
+                }
             } else {
                 btConnectPresenter.disconnectDeviceSelected();
                 btn.setText("Connect");
+                connectedDevice = null;
+            }
+        });
+        txt.setOnClickListener(v -> {
+            if (connected && !btScan) {
+                mainPresenter.navigateToHomeFragment();
             }
         });
     }
+
 }

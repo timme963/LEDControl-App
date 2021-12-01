@@ -39,7 +39,6 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
     BluetoothGatt bluetoothGatt;
 
     ArrayList<BluetoothDevice> devicesDiscovered = new ArrayList<>();
-    int deviceIndex = 0;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public BTConnectPresenter(MainActivity mainActivity) {
@@ -56,6 +55,7 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
 
     @Override
     public void startScan() {
+        devicesDiscovered.clear();
         AsyncTask.execute(() -> btScanner.startScan(leScanCallback));
     }
 
@@ -75,7 +75,6 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
             if (!devicesDiscovered.contains(device)) {
                 btConnectFragment.showDevice(device);
                 devicesDiscovered.add(result.getDevice());
-                deviceIndex++;
             }
         }
     };
@@ -121,8 +120,6 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
 
         @Override
         public void onServicesDiscovered(final BluetoothGatt gatt, final int status) {
-            // this will get called after the client initiates a 			BluetoothGatt.discoverServices() call
-            //MainActivity.this.runOnUiThread(() -> textView.append("device services have been discovered\n"));
             displayGattServices(bluetoothGatt.getServices());
         }
 
@@ -142,15 +139,12 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
         System.out.println(characteristic.getUuid());
     }
 
-    public void connectToDeviceSelected(BluetoothDevice device) {
-        //textView.append("Trying to connect to device at index: " + deviceIndexInput.getText() + "\n");
-        //int deviceSelected = Integer.parseInt(deviceIndexInput.getText().toString());
-        //bluetoothGatt = devicesDiscovered.get(deviceSelected).connectGatt(mainActivity.getApplicationContext(), false, btleGattCallback);
+    public boolean connectToDeviceSelected(BluetoothDevice device) {
         bluetoothGatt = device.connectGatt(mainActivity.getApplicationContext(), false, btleGattCallback);
+        return bluetoothGatt != null;
     }
 
     public void disconnectDeviceSelected() {
-        //textView.append("Disconnecting from device\n");
         bluetoothGatt.disconnect();
     }
 

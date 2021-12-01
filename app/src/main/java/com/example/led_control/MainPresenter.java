@@ -15,6 +15,11 @@ public class MainPresenter implements MainContract.Presenter {
         this.homeFragment = homeFragment;
     }
 
+    @Override
+    public void navigateToHomeFragment() {
+        mainActivity.navigateToHomeFragment();
+    }
+
     public MainActivity getActivity() {
       return mainActivity;
     }
