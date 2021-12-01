@@ -14,4 +14,8 @@ public class MainPresenter implements MainContract.Presenter {
     public void setView(HomeFragment homeFragment) {
         this.homeFragment = homeFragment;
     }
+
+    public MainActivity getActivity() {
+      return mainActivity;
+    }
 }

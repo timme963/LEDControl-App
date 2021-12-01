@@ -1,7 +1,10 @@
 package com.example.led_control.btconnect;
 
+import android.bluetooth.BluetoothDevice;
+
 public interface BTConnectContract {
-    interface View { // from presenter to view
+    interface View {
+        void showDevice(BluetoothDevice device); // from presenter to view
 
     }
 
@@ -11,5 +14,9 @@ public interface BTConnectContract {
 
     interface Presenter { // from view/service to presenter (and back)
         void setView(BTConnectFragment btConnectFragment);
+
+        void startScan();
+
+        void stopScan();
     }
 }
