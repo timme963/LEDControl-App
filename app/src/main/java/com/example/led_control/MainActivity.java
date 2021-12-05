@@ -20,6 +20,8 @@ import com.example.led_control.btconnect.BTConnectFragment;
 import com.example.led_control.btconnect.BTConnectPresenter;
 import com.example.led_control.home.HomeFragment;
 import com.example.led_control.home.HomePresenter;
+import com.example.led_control.title.TitleFragment;
+import com.example.led_control.title.TitlePresenter;
 
 public class MainActivity extends AppCompatActivity implements MainContract.View {
 
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     BluetoothAdapter btAdapter;
     BluetoothLeScanner btScanner;
     HomeFragment homeFragment;
+    BTConnectFragment btConnectFragment;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -42,15 +45,17 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         HomePresenter homePresenter = new HomePresenter(this);
         MainPresenter mainPresenter = new MainPresenter(this);
         BTConnectPresenter btConnectPresenter = new BTConnectPresenter(this);
+        TitlePresenter titlePresenter = new TitlePresenter(this);
 
         //Setup Fragments
-        homeFragment = new HomeFragment(mainPresenter, homePresenter);
-        BTConnectFragment btConnectFragment = new BTConnectFragment(mainPresenter, btConnectPresenter);
+        homeFragment = new HomeFragment(mainPresenter, homePresenter, btConnectPresenter);
+        btConnectFragment = new BTConnectFragment(mainPresenter, btConnectPresenter);
+        TitleFragment titleFragment = new TitleFragment(mainPresenter, titlePresenter);
 
         // set homeFragment
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    btConnectFragment).commit();
+                    titleFragment).commit();
         }
 
         btManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
@@ -107,6 +112,14 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, homeFragment)
+                .commit();
+    }
+
+    @Override
+    public void navigateToConnectFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, btConnectFragment)
                 .commit();
     }
 }

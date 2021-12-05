@@ -19,8 +19,6 @@ import androidx.annotation.RequiresApi;
 
 import com.example.led_control.MainActivity;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,8 +29,8 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
 
     private static final String TAG = "LED-ControlAPP";
     // Stops scanning after 5 seconds.
-    private BluetoothGattCharacteristic charac;
 
+    BluetoothGattCharacteristic charac;
     BluetoothManager btManager;
     BluetoothAdapter btAdapter;
     BluetoothLeScanner btScanner;
@@ -64,6 +62,16 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
         AsyncTask.execute(() -> btScanner.stopScan(leScanCallback));
     }
 
+    @Override
+    public BluetoothGattCharacteristic getCharac() {
+        return charac;
+    }
+
+    @Override
+    public BluetoothGatt getGatt() {
+        return bluetoothGatt;
+    }
+
     // Device scan callback.
     private final ScanCallback leScanCallback = new ScanCallback() {
         @Override
@@ -85,7 +93,7 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
             // this will get called anytime you perform a read or write characteristic operation
-            //MainActivity.this.runOnUiThread(() -> textView.append("device read or wrote to\n"));
+            Log.i(TAG, "device read or wrote to \n");
         }
 
         @Override
@@ -94,26 +102,15 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
             System.out.println(newState);
             switch (newState) {
                 case 0:
-                    // neue methode -> fragment
-                   /*MainActivity.this.runOnUiThread(() -> {
-                        textView.append("device disconnected\n");
-                        connectToDevice.setVisibility(View.VISIBLE);
-                        disconnectDevice.setVisibility(View.INVISIBLE);
-                    });
-                    break;*/
+                        Log.i(TAG, "device disconnected\n");
+                    break;
                 case 2:
-                    /*MainActivity.this.runOnUiThread(() -> {
-                        textView.append("device connected\n");
-                        connectToDevice.setVisibility(View.INVISIBLE);
-                        disconnectDevice.setVisibility(View.VISIBLE);
-                    });
-
+                        Log.i(TAG, "device connected\n");
                     // discover services and characteristics for this device
                     bluetoothGatt.discoverServices();
-*/
                     break;
                 default:
-                    //MainActivity.this.runOnUiThread(() -> textView.append("we encounterned an unknown state, uh oh\n"));
+                    Log.i(TAG, "we encounterned an unknown state, uh oh\n");
                     break;
             }
         }
@@ -136,7 +133,7 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
 
     private void broadcastUpdate(final BluetoothGattCharacteristic characteristic) {
 
-        System.out.println(characteristic.getUuid());
+        Log.i(TAG, characteristic.getUuid().toString());
     }
 
     public boolean connectToDeviceSelected(BluetoothDevice device) {
@@ -148,30 +145,6 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
         bluetoothGatt.disconnect();
     }
 
-    /*private void btnclick() {
-        writeCharacteristic(charac, "off");
-    }*/
-
-    public void writeCharacteristic(BluetoothGattCharacteristic characteristic,
-                                    String data) {
-        if (btAdapter == null || bluetoothGatt == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
-        }
-
-        Log.i(TAG, "characteristic " + characteristic.toString());
-        try {
-            Log.i(TAG, "data " + URLEncoder.encode(data, "utf-8"));
-
-            characteristic.setValue(URLEncoder.encode(data, "utf-8"));
-
-            bluetoothGatt.writeCharacteristic(characteristic);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-    }
-
-
     private void displayGattServices(List<BluetoothGattService> gattServices) {
         if (gattServices == null) return;
 
@@ -179,8 +152,7 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
         for (BluetoothGattService gattService : gattServices) {
 
             final String uuid = gattService.getUuid().toString();
-            System.out.println("Service discovered: " + uuid);
-            //MainActivity.this.runOnUiThread(() -> textView.append("Service disovered: "+uuid+"\n"));
+            Log.i(TAG, "Service discovered: " + uuid);
             new ArrayList<HashMap<String, String>>();
             List<BluetoothGattCharacteristic> gattCharacteristics =
                     gattService.getCharacteristics();
@@ -191,8 +163,7 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
 
                 charac = gattCharacteristic;
                 final String charUuid = gattCharacteristic.getUuid().toString();
-                System.out.println("Characteristic discovered for service: " + charUuid);
-                //MainActivity.this.runOnUiThread(() -> textView.append("Characteristic discovered for service: "+charUuid+"\n"));
+                Log.i(TAG,"Characteristic discovered for service: " + charUuid);
 
             }
         }

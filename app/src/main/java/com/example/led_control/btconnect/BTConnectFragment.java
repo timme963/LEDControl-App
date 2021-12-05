@@ -20,9 +20,8 @@ import com.example.led_control.MainPresenter;
 import com.example.led_control.R;
 
 public class BTConnectFragment extends Fragment implements BTConnectContract.View {
-    private View view;
-    private MainPresenter mainPresenter;
-    private BTConnectPresenter btConnectPresenter;
+    private final MainPresenter mainPresenter;
+    private final BTConnectPresenter btConnectPresenter;
     private static final long SCAN_PERIOD = 5000;
     private final Handler handler = new Handler();
 
@@ -48,8 +47,7 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_btconnect, container, false);
-        return view;
+        return inflater.inflate(R.layout.fragment_btconnect, container, false);
     }
 
     /**
@@ -69,6 +67,9 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
             btButton.setBackgroundColor((int) 0xFF1C9191);
         } else {
             btButton.setBackgroundColor((int) 0xFFD0D3D3);
+        }
+        if (connectedDevice != null) {
+            showDevice(connectedDevice);
         }
 
         setupOnListener();
@@ -104,11 +105,11 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
 
         btButton.setOnClickListener(v -> {
             if (!btConnectPresenter.btAdapter.isEnabled()) {
-                btButton.setBackgroundColor((int) 0xFF1C9191);
                 btConnectPresenter.btAdapter.enable();
+                btButton.setBackgroundColor((int) 0xFF1C9191);
             } else {
-                btButton.setBackgroundColor((int) 0xFFD0D3D3);
                 btConnectPresenter.btAdapter.disable();
+                btButton.setBackgroundColor((int) 0xFFD0D3D3);
             }
         });
     }
@@ -146,6 +147,7 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
                 btConnectPresenter.disconnectDeviceSelected();
                 btn.setText("Connect");
                 connectedDevice = null;
+                connected = false;
             }
         });
         txt.setOnClickListener(v -> {

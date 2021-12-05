@@ -1,6 +1,7 @@
 package com.example.led_control.btconnect;
 
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 
 public interface BTConnectContract {
     interface View {
@@ -18,5 +19,9 @@ public interface BTConnectContract {
         void startScan();
 
         void stopScan();
+
+        Object getCharac();
+
+        BluetoothGatt getGatt();
     }
 }

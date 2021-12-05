@@ -3,9 +3,10 @@ package com.example.led_control;
 import com.example.led_control.home.HomeFragment;
 
 public interface MainContract {
-    interface View {
-        void navigateToHomeFragment(); // from presenter to view
+    interface View {// from presenter to view
+        void navigateToHomeFragment();
 
+        void navigateToConnectFragment();
     }
 
     interface Model { // from presenter to model and back
@@ -17,5 +18,6 @@ public interface MainContract {
 
         void navigateToHomeFragment();
 
+        void navigateToConnectFragment();
     }
 }
