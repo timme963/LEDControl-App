@@ -55,24 +55,24 @@
         android:id="@+id/effects"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="100dp"
         android:text="Effekte"
-        app:layout_constraintBottom_toTopOf="@+id/Brightness"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <SeekBar
-        android:id="@+id/Brightness"
-        style="@android:style/Widget.Material.Light.SeekBar"
-        android:layout_width="253dp"
-        android:layout_height="114dp"
-        android:layout_marginBottom="28dp"
-        android:max="255"
-        android:progress="100"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.481"
-        app:layout_constraintStart_toStartOf="parent" />
+    <top.defaults.colorpicker.ColorPickerView
+        android:id="@+id/colorPicker"
+        android:layout_width="302dp"
+        android:layout_height="286dp"
+        app:enableAlpha="true"
+        app:enableBrightness="true"
+        app:layout_constraintBottom_toTopOf="@+id/effects"
+        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/onOff" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

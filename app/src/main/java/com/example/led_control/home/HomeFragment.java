@@ -3,15 +3,14 @@ package com.example.led_control.home;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.SeekBar;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +20,10 @@ import com.example.led_control.MainPresenter;
 import com.example.led_control.R;
 import com.example.led_control.btconnect.BTConnectPresenter;
 
+import java.text.NumberFormat;
+
+import top.defaults.colorpicker.ColorPickerView;
+
 public class HomeFragment extends Fragment implements HomeContract.View {
     private final MainPresenter mainPresenter;
     private final HomePresenter homePresenter;
@@ -29,9 +32,9 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private Switch OnOffBtn;
     private Button effect;
-    private SeekBar brightness;
     private BluetoothGattCharacteristic charac;
-    BluetoothGatt bluetoothGatt;
+    private BluetoothGatt bluetoothGatt;
+    NumberFormat nf;
 
     public HomeFragment(MainPresenter mainPresenter, HomePresenter homePresenter, BTConnectPresenter btConnectPresenter) {
         this.mainPresenter = mainPresenter;
@@ -54,7 +57,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     /**
      * Second method where the view is ready to use
      */
-    @SuppressLint("UseSwitchCompatOrMaterialCode")
+    @SuppressLint({"UseSwitchCompatOrMaterialCode", "ClickableViewAccessibility"})
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -62,15 +65,29 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         BTButton = view.findViewById(R.id.BTButton2);
         OnOffBtn = view.findViewById(R.id.onOff);
         effect = view.findViewById(R.id.effects);
-        brightness = (SeekBar) view.findViewById(R.id.Brightness);
         OnOffBtn.setActivated(false);
 
         charac = btConnectPresenter.getCharac();
         bluetoothGatt = btConnectPresenter.getGatt();
 
+        ColorPickerView colorPicker = view.findViewById(R.id.colorPicker);
+        nf = NumberFormat.getIntegerInstance();
+        nf.setMinimumIntegerDigits(3);
+        nf.setGroupingUsed(false);
+
+        colorPicker.setInitialColor(0x7F313C93);
+
+        colorPicker.subscribe((color, fromUser, shouldPropagate) -> {
+            int r = Color.red(color);
+            int g = Color.green(color);
+            int b = Color.blue(color);
+            homePresenter.write(charac, "c" + nf.format(r) + " " + nf.format(g) + " " + nf.format(b), bluetoothGatt);
+            });
+
         setupOnListener();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void setupOnListener() {
         //TODO ändern in einstellungen
         BTButton.setOnClickListener(v -> mainPresenter.navigateToConnectFragment());
@@ -81,23 +98,6 @@ public class HomeFragment extends Fragment implements HomeContract.View {
             } else {
                 homePresenter.write(charac, "off", bluetoothGatt);
                 OnOffBtn.setActivated(false);
-            }
-        });
-        brightness.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            int newProgress = 0;
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                newProgress = progress;
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                homePresenter.write(charac, "bright" + newProgress, bluetoothGatt);
             }
         });
         effect.setOnClickListener(v -> {

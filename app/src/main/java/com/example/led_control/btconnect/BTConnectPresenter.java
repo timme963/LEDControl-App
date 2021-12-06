@@ -103,6 +103,10 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
             switch (newState) {
                 case 0:
                         Log.i(TAG, "device disconnected\n");
+                        btConnectFragment.connectedDevice = null;
+                        btConnectFragment.connected = false;
+                        btConnectFragment.deviceList.removeAllViews();
+                        mainActivity.navigateToConnectFragment();
                     break;
                 case 2:
                         Log.i(TAG, "device connected\n");
