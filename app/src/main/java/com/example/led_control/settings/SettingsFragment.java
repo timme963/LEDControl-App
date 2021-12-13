@@ -22,7 +22,6 @@ import com.example.led_control.MainPresenter;
 import com.example.led_control.R;
 import com.example.led_control.btconnect.BTConnectPresenter;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

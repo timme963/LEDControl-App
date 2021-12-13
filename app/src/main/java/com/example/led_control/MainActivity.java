@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         homeFragment = new HomeFragment(mainPresenter, homePresenter, btConnectPresenter);
         btConnectFragment = new BTConnectFragment(mainPresenter, btConnectPresenter);
         settingsFragment = new SettingsFragment(mainPresenter, settingsPresenter, btConnectPresenter);
-        effectsFragment = new EffectsFragment(mainPresenter, effectsPresenter);
+        effectsFragment = new EffectsFragment(mainPresenter, effectsPresenter, btConnectPresenter);
         TitleFragment titleFragment = new TitleFragment(mainPresenter, titlePresenter);
 
         // set homeFragment

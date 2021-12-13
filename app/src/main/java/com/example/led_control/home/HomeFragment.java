@@ -67,17 +67,18 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         effect = view.findViewById(R.id.effects);
         OnOffBtn.setActivated(true);
         OnOffBtn.setChecked(true);
-        homePresenter.write(charac, "on", bluetoothGatt);
+        OnOffBtn.setEnabled(true);
 
         charac = btConnectPresenter.getCharac();
         bluetoothGatt = btConnectPresenter.getGatt();
+        homePresenter.write(charac, "on", bluetoothGatt);
 
         ColorPickerView colorPicker = view.findViewById(R.id.colorPicker);
         nf = NumberFormat.getIntegerInstance();
         nf.setMinimumIntegerDigits(3);
         nf.setGroupingUsed(false);
 
-        colorPicker.setInitialColor(0x7F313C93);
+        //colorPicker.setInitialColor(0x7F313C93); // if you want to set a color when you open home
 
         colorPicker.subscribe((color, fromUser, shouldPropagate) -> {
             int r = Color.red(color);

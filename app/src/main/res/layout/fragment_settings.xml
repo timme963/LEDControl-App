@@ -30,6 +30,7 @@
         android:id="@+id/settingList"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
