@@ -25,7 +25,14 @@ public class MainPresenter implements MainContract.Presenter {
         mainActivity.navigateToConnectFragment();
     }
 
-    public MainActivity getActivity() {
-      return mainActivity;
+    @Override
+    public void navigateToSettingsFragment() {
+        mainActivity.navigateToSettingsFragment();
     }
+
+    @Override
+    public void navigateToEffectsFragment() {
+        mainActivity.navigateToEffectFragment();
+    }
+
 }

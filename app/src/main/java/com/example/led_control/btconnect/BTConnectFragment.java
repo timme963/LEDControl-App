@@ -140,8 +140,8 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
                 connectedDevice = device;
                 connected = btConnectPresenter.connectToDeviceSelected(device);
                 btn.setText("Disconnect");
-                if (connected && !btScan) {
-                    mainPresenter.navigateToHomeFragment();
+                if (connected) {
+                    handler.postDelayed(mainPresenter::navigateToHomeFragment, 3000);
                 }
             } else {
                 btConnectPresenter.disconnectDeviceSelected();
@@ -151,8 +151,8 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
             }
         });
         txt.setOnClickListener(v -> {
-            if (connected && !btScan) {
-                mainPresenter.navigateToHomeFragment();
+            if (connected) {
+                handler.postDelayed(mainPresenter::navigateToHomeFragment, 1000);
             }
         });
     }

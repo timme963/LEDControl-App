@@ -18,8 +18,12 @@ import androidx.core.app.ActivityCompat;
 
 import com.example.led_control.btconnect.BTConnectFragment;
 import com.example.led_control.btconnect.BTConnectPresenter;
+import com.example.led_control.effects.EffectsFragment;
+import com.example.led_control.effects.EffectsPresenter;
 import com.example.led_control.home.HomeFragment;
 import com.example.led_control.home.HomePresenter;
+import com.example.led_control.settings.SettingsFragment;
+import com.example.led_control.settings.SettingsPresenter;
 import com.example.led_control.title.TitleFragment;
 import com.example.led_control.title.TitlePresenter;
 
@@ -34,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     BluetoothLeScanner btScanner;
     HomeFragment homeFragment;
     BTConnectFragment btConnectFragment;
+    SettingsFragment settingsFragment;
+    EffectsFragment effectsFragment;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -45,11 +51,15 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         HomePresenter homePresenter = new HomePresenter(this);
         MainPresenter mainPresenter = new MainPresenter(this);
         BTConnectPresenter btConnectPresenter = new BTConnectPresenter(this);
+        EffectsPresenter effectsPresenter = new EffectsPresenter(this);
+        SettingsPresenter settingsPresenter = new SettingsPresenter(this);
         TitlePresenter titlePresenter = new TitlePresenter(this);
 
         //Setup Fragments
         homeFragment = new HomeFragment(mainPresenter, homePresenter, btConnectPresenter);
         btConnectFragment = new BTConnectFragment(mainPresenter, btConnectPresenter);
+        settingsFragment = new SettingsFragment(mainPresenter, settingsPresenter, btConnectPresenter);
+        effectsFragment = new EffectsFragment(mainPresenter, effectsPresenter);
         TitleFragment titleFragment = new TitleFragment(mainPresenter, titlePresenter);
 
         // set homeFragment
@@ -120,6 +130,22 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, btConnectFragment)
+                .commit();
+    }
+
+    @Override
+    public void navigateToEffectFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, effectsFragment)
+                .commit();
+    }
+
+    @Override
+    public void navigateToSettingsFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, settingsFragment)
                 .commit();
     }
 }

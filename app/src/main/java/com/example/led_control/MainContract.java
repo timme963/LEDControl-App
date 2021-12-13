@@ -7,6 +7,10 @@ public interface MainContract {
         void navigateToHomeFragment();
 
         void navigateToConnectFragment();
+
+        void navigateToSettingsFragment();
+
+        void navigateToEffectFragment();
     }
 
     interface Model { // from presenter to model and back
@@ -19,5 +23,9 @@ public interface MainContract {
         void navigateToHomeFragment();
 
         void navigateToConnectFragment();
+
+        void navigateToSettingsFragment();
+
+        void navigateToEffectsFragment();
     }
 }

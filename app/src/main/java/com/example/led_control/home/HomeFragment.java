@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Switch;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,11 +26,11 @@ import top.defaults.colorpicker.ColorPickerView;
 
 public class HomeFragment extends Fragment implements HomeContract.View {
     private final MainPresenter mainPresenter;
-    private final HomePresenter homePresenter;
+    private HomePresenter homePresenter;
     private BTConnectPresenter btConnectPresenter;
-    private ImageButton BTButton;
+    private ImageButton SettingsButton;
     @SuppressLint("UseSwitchCompatOrMaterialCode")
-    private Switch OnOffBtn;
+    private ToggleButton OnOffBtn;
     private Button effect;
     private BluetoothGattCharacteristic charac;
     private BluetoothGatt bluetoothGatt;
@@ -62,10 +62,12 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        BTButton = view.findViewById(R.id.BTButton2);
+        SettingsButton = view.findViewById(R.id.SettingsButton);
         OnOffBtn = view.findViewById(R.id.onOff);
         effect = view.findViewById(R.id.effects);
-        OnOffBtn.setActivated(false);
+        OnOffBtn.setActivated(true);
+        OnOffBtn.setChecked(true);
+        homePresenter.write(charac, "on", bluetoothGatt);
 
         charac = btConnectPresenter.getCharac();
         bluetoothGatt = btConnectPresenter.getGatt();
@@ -89,8 +91,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
 
     @SuppressLint("ClickableViewAccessibility")
     private void setupOnListener() {
-        //TODO ändern in einstellungen
-        BTButton.setOnClickListener(v -> mainPresenter.navigateToConnectFragment());
+        SettingsButton.setOnClickListener(v -> mainPresenter.navigateToSettingsFragment());
         OnOffBtn.setOnClickListener(v -> {
             if (!OnOffBtn.isActivated()) {
                 homePresenter.write(charac, "on", bluetoothGatt);
@@ -101,7 +102,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
             }
         });
         effect.setOnClickListener(v -> {
-            //TODO effekte fragment
+            mainPresenter.navigateToEffectsFragment();
         });
     }
 

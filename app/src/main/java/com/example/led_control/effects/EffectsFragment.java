@@ -1,8 +1,7 @@
-package com.example.led_control.title;
+package com.example.led_control.effects;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,15 +13,16 @@ import androidx.fragment.app.Fragment;
 import com.example.led_control.MainPresenter;
 import com.example.led_control.R;
 
-public class TitleFragment extends Fragment implements TitleContract.View {
+public class EffectsFragment extends Fragment implements EffectsContract.View {
     private final MainPresenter mainPresenter;
-    private final TitlePresenter titlePresenter;
+    private final EffectsPresenter effectsPresenter;
+    private View settingsBtn;
 
-    public TitleFragment(MainPresenter mainPresenter, TitlePresenter titlePresenter) {
+    public EffectsFragment(MainPresenter mainPresenter, EffectsPresenter effectsPresenter) {
         this.mainPresenter = mainPresenter;
-        this.titlePresenter = titlePresenter;
+        this.effectsPresenter = effectsPresenter;
 
-        titlePresenter.setView(this);
+        effectsPresenter.setView(this);
     }
 
     /**
@@ -32,7 +32,7 @@ public class TitleFragment extends Fragment implements TitleContract.View {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.title_page, container, false);
+        return inflater.inflate(R.layout.fragment_effects, container, false);
     }
 
     /**
@@ -43,22 +43,13 @@ public class TitleFragment extends Fragment implements TitleContract.View {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        settingsBtn = view.findViewById(R.id.settingsBtn);
+
         setupOnListener();
-        startApp();
-    }
-
-    public void startApp() {
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                // Actions to do after 10 seconds
-                mainPresenter.navigateToConnectFragment();
-            }
-        }, 3000);
-
     }
 
     private void setupOnListener() {
+        settingsBtn.setOnClickListener(v -> mainPresenter.navigateToSettingsFragment());
     }
 
     @Override
@@ -66,3 +57,4 @@ public class TitleFragment extends Fragment implements TitleContract.View {
         super.onStop();
     }
 }
+

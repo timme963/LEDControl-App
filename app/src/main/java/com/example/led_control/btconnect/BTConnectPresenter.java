@@ -53,13 +53,17 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
 
     @Override
     public void startScan() {
-        devicesDiscovered.clear();
-        AsyncTask.execute(() -> btScanner.startScan(leScanCallback));
+        if (btAdapter.isEnabled()) {
+            devicesDiscovered.clear();
+            AsyncTask.execute(() -> btScanner.startScan(leScanCallback));
+        }
     }
 
     @Override
     public void stopScan() {
-        AsyncTask.execute(() -> btScanner.stopScan(leScanCallback));
+        if (btAdapter.isEnabled()) {
+            AsyncTask.execute(() -> btScanner.stopScan(leScanCallback));
+        }
     }
 
     @Override
