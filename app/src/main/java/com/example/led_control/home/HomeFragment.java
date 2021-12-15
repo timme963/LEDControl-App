@@ -102,9 +102,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
                 OnOffBtn.setActivated(false);
             }
         });
-        effect.setOnClickListener(v -> {
-            mainPresenter.navigateToEffectsFragment();
-        });
+        effect.setOnClickListener(v -> mainPresenter.navigateToEffectsFragment());
     }
 
     @Override

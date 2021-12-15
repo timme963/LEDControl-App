@@ -3,7 +3,6 @@ package com.example.led_control.effects;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -68,6 +67,7 @@ public class EffectsFragment extends Fragment implements EffectsContract.View {
     /**
      * Second method where the view is ready to use
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint({"UseSwitchCompatOrMaterialCode", "SimpleDateFormat"})
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -83,15 +83,26 @@ public class EffectsFragment extends Fragment implements EffectsContract.View {
         goSleep = view.findViewById(R.id.goSleep);
         colorChange = view.findViewById(R.id.colorChange);
         blink = view.findViewById(R.id.blink);
+        //TODO mehr effekte?
+        //TODO beacon?
+        //TODO sound reaction?
 
         setupOnListener();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void setupOnListener() {
         settingsBtn.setOnClickListener(v -> mainPresenter.navigateToSettingsFragment());
         colorChange.setOnClickListener(v -> effectsPresenter.write(charac, "colorChange", bluetoothGatt));//TODO Farben?!
-        blink.setOnClickListener(v -> effectsPresenter.write(charac, "blink", bluetoothGatt));//intervall
-        goSleep.setOnClickListener(v -> effectsPresenter.write(charac, "gosleep" + "200", bluetoothGatt));//intervall + (time)
+        blink.setOnClickListener(v -> {
+            time = zeitformat.format(kalender.getTime());
+            signal = time;
+            generateIntervallPopUp("blink");
+        });
+        goSleep.setOnClickListener(v -> {
+            time = zeitformat.format(kalender.getTime());
+            generateTimePopUp("gosleep");
+        });
         wakeUp.setOnClickListener(v -> {
             time = zeitformat.format(kalender.getTime());
             generateTimePopUp("wakeup");
@@ -99,7 +110,7 @@ public class EffectsFragment extends Fragment implements EffectsContract.View {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private String generateIntervallPopUp(String effect) {
+    private void generateIntervallPopUp(String effect) {
         final EditText input = new EditText(getActivity());
 
         new AlertDialog.Builder(requireActivity())
@@ -108,23 +119,17 @@ public class EffectsFragment extends Fragment implements EffectsContract.View {
                 .setPositiveButton("Ok", (dialog, whichButton) -> {
                     Editable editable = input.getText();
                     try {
+                        long millisBetween = Duration.between(LocalTime.parse(time),
+                                LocalTime.parse(signal)).toMillis();
                         if (signal.equals(time)) {
-                            long millisBetween = Duration.between(LocalTime.parse(time),
-                                    LocalTime.parse(signal)).toMillis();
-                            System.out.println(millisBetween + "############################1");
                             intervall = Integer.parseInt(String.valueOf(editable));
                             effectsPresenter.write(charac, effect + intervall, bluetoothGatt);
                         } else {
-                            long millisBetween = Duration.between(LocalTime.parse(time),
-                                    LocalTime.parse(signal)).toMillis();
-                            System.out.println(millisBetween + "############################2");
                             if (millisBetween > 0) {
                                 Handler handler = new Handler();
-                                handler.postDelayed(new Runnable() {
-                                    public void run() {
-                                        intervall = Integer.parseInt(String.valueOf(editable));
-                                        effectsPresenter.write(charac, effect + intervall, bluetoothGatt);
-                                    }
+                                handler.postDelayed(() -> {
+                                    intervall = Integer.parseInt(String.valueOf(editable));
+                                    effectsPresenter.write(charac, effect + intervall, bluetoothGatt);
                                 }, millisBetween);
                             }
                         }
@@ -135,11 +140,10 @@ public class EffectsFragment extends Fragment implements EffectsContract.View {
                 .setNegativeButton("Cancel", (dialog, whichButton) -> {
                     // Do nothing.
                 }).show();
-        return String.valueOf(intervall);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private String generateTimePopUp(String effect) {
+    private void generateTimePopUp(String effect) {
         final EditText input = new EditText(getActivity());
 
         new AlertDialog.Builder(requireActivity())
@@ -153,7 +157,6 @@ public class EffectsFragment extends Fragment implements EffectsContract.View {
                 .setNegativeButton("Cancel", (dialog, whichButton) -> {
                     // Do nothing.
                 }).show();
-        return signal;
     }
 
     @Override
