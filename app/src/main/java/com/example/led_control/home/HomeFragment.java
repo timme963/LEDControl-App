@@ -35,8 +35,8 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private ToggleButton OnOffBtn;
     private Button effect;
-    private ArrayList<BluetoothGattCharacteristic> charac = new ArrayList<BluetoothGattCharacteristic>();
-    private ArrayList<BluetoothGatt> bluetoothGatt = new ArrayList<BluetoothGatt>();
+    private ArrayList<BluetoothGattCharacteristic> charac = new ArrayList<>();
+    private ArrayList<BluetoothGatt> bluetoothGatt = new ArrayList<>();
     NumberFormat nf;
 
     public HomeFragment(MainPresenter mainPresenter, HomePresenter homePresenter, BTConnectPresenter btConnectPresenter, SettingsPresenter settingsPresenter) {

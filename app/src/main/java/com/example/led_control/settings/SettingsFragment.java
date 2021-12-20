@@ -31,8 +31,8 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
     private final MainPresenter mainPresenter;
     private final SettingsPresenter settingsPresenter;
     private BTConnectPresenter btConnectPresenter;
-    private ArrayList<BluetoothGattCharacteristic> charac = new ArrayList<BluetoothGattCharacteristic>();
-    private ArrayList<BluetoothGatt> bluetoothGatt = new ArrayList<BluetoothGatt>();
+    private ArrayList<BluetoothGattCharacteristic> charac = new ArrayList<>();
+    private ArrayList<BluetoothGatt> bluetoothGatt = new ArrayList<>();
     private ListView settingList;
     private int anzahl;
     private BluetoothGatt currentGatt;
@@ -118,7 +118,7 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
     private void setupOnListener() {
     }
 
-    private AdapterView.OnItemSelectedListener click = new AdapterView.OnItemSelectedListener() {
+    private final AdapterView.OnItemSelectedListener click = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             if (position >= bluetoothGatt.size()) {
@@ -133,11 +133,11 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
 
         @Override
         public void onNothingSelected(AdapterView<?> parent) {
-
+            //Do nothing
         }
     };
 
-    private AdapterView.OnItemClickListener listClick = new AdapterView.OnItemClickListener() {
+    private final AdapterView.OnItemClickListener listClick = new AdapterView.OnItemClickListener() {
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 
             String itemValue = settingList.getItemAtPosition(position).toString();
@@ -181,7 +181,7 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
 
     public ArrayList<BluetoothGatt> getBluetoothGatt() {
         if (currentGatt != null) {
-            ArrayList<BluetoothGatt> currentGatt = new ArrayList<BluetoothGatt>();
+            ArrayList<BluetoothGatt> currentGatt = new ArrayList<>();
             currentGatt.add(this.currentGatt);
             return currentGatt;
         } else {
@@ -191,7 +191,7 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
 
     public ArrayList<BluetoothGattCharacteristic> getCharac() {
         if (currentCharac != null) {
-            ArrayList<BluetoothGattCharacteristic> currentCharac = new ArrayList<BluetoothGattCharacteristic>();
+            ArrayList<BluetoothGattCharacteristic> currentCharac = new ArrayList<>();
             currentCharac.add(this.currentCharac);
             return currentCharac;
         } else {

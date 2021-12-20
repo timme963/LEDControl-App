@@ -49,12 +49,8 @@ public class TitleFragment extends Fragment implements TitleContract.View {
 
     public void startApp() {
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                // Actions to do after 10 seconds
-                mainPresenter.navigateToConnectFragment();
-            }
-        }, 3000);
+        // Actions to do after 10 seconds
+        handler.postDelayed(mainPresenter::navigateToConnectFragment, 3000);
 
     }
 

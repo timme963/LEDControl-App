@@ -35,7 +35,7 @@ public class EffectsFragment extends Fragment implements EffectsContract.View {
     private final MainPresenter mainPresenter;
     private final EffectsPresenter effectsPresenter;
     private final SettingsPresenter settingsPresenter;
-    private ArrayList<BluetoothGattCharacteristic> charac = new ArrayList<BluetoothGattCharacteristic>();
+    private ArrayList<BluetoothGattCharacteristic> charac = new ArrayList<>();
     private ArrayList<BluetoothGatt> bluetoothGatt;
     private BTConnectPresenter btConnectPresenter;
     private ImageButton settingsBtn;

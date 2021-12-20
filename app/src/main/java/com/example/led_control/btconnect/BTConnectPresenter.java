@@ -35,8 +35,8 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
     BluetoothLeScanner btScanner;
 
     ArrayList<BluetoothDevice> devicesDiscovered = new ArrayList<>();
-    ArrayList<BluetoothGatt> bluetoothGatt = new ArrayList<BluetoothGatt>();
-    ArrayList<BluetoothGattCharacteristic> charac = new ArrayList<BluetoothGattCharacteristic>();
+    ArrayList<BluetoothGatt> bluetoothGatt = new ArrayList<>();
+    ArrayList<BluetoothGattCharacteristic> charac = new ArrayList<>();
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public BTConnectPresenter(MainActivity mainActivity) {

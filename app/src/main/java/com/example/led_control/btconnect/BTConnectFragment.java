@@ -31,7 +31,7 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
     Button stopScan;
     ImageButton btButton;
     LinearLayout deviceList;
-    ArrayList<BluetoothDevice> connectedDevice = new ArrayList<BluetoothDevice>();
+    ArrayList<BluetoothDevice> connectedDevice = new ArrayList<>();
     boolean btScan;
     boolean connected = false;
 
@@ -66,9 +66,9 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
         deviceList = view.findViewById(R.id.BTDeviceList);
 
         if (btConnectPresenter.btAdapter.isEnabled()) {
-            btButton.setBackgroundColor((int) 0xFF1C9191);
+            btButton.setBackgroundColor(0xFF1C9191);
         } else {
-            btButton.setBackgroundColor((int) 0xFFD0D3D3);
+            btButton.setBackgroundColor(0xFFD0D3D3);
         }
         if (connectedDevice != null) {
             for (BluetoothDevice i : connectedDevice) {
@@ -112,10 +112,10 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
         btButton.setOnClickListener(v -> {
             if (!btConnectPresenter.btAdapter.isEnabled()) {
                 btConnectPresenter.btAdapter.enable();
-                btButton.setBackgroundColor((int) 0xFF1C9191);
+                btButton.setBackgroundColor(0xFF1C9191);
             } else {
                 btConnectPresenter.btAdapter.disable();
-                btButton.setBackgroundColor((int) 0xFFD0D3D3);
+                btButton.setBackgroundColor(0xFFD0D3D3);
             }
         });
     }
@@ -157,7 +157,7 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
             }
         });
         txt.setOnClickListener(v -> {
-            if (connected) {
+            if (connectedDevice.contains(device)) {
                 handler.postDelayed(mainPresenter::navigateToSettingsFragment, 1000);
             }
         });
