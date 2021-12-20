@@ -19,27 +19,31 @@ import androidx.fragment.app.Fragment;
 import com.example.led_control.MainPresenter;
 import com.example.led_control.R;
 import com.example.led_control.btconnect.BTConnectPresenter;
+import com.example.led_control.settings.SettingsPresenter;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
 
 import top.defaults.colorpicker.ColorPickerView;
 
 public class HomeFragment extends Fragment implements HomeContract.View {
     private final MainPresenter mainPresenter;
+    private final SettingsPresenter settingsPresenter;
     private HomePresenter homePresenter;
     private BTConnectPresenter btConnectPresenter;
     private ImageButton SettingsButton;
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private ToggleButton OnOffBtn;
     private Button effect;
-    private BluetoothGattCharacteristic charac;
-    private BluetoothGatt bluetoothGatt;
+    private ArrayList<BluetoothGattCharacteristic> charac = new ArrayList<BluetoothGattCharacteristic>();
+    private ArrayList<BluetoothGatt> bluetoothGatt = new ArrayList<BluetoothGatt>();
     NumberFormat nf;
 
-    public HomeFragment(MainPresenter mainPresenter, HomePresenter homePresenter, BTConnectPresenter btConnectPresenter) {
+    public HomeFragment(MainPresenter mainPresenter, HomePresenter homePresenter, BTConnectPresenter btConnectPresenter, SettingsPresenter settingsPresenter) {
         this.mainPresenter = mainPresenter;
         this.homePresenter = homePresenter;
         this.btConnectPresenter = btConnectPresenter;
+        this.settingsPresenter = settingsPresenter;
 
         homePresenter.setView(this);
     }
@@ -69,9 +73,11 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         OnOffBtn.setChecked(true);
         OnOffBtn.setEnabled(true);
 
-        charac = btConnectPresenter.getCharac();
-        bluetoothGatt = btConnectPresenter.getGatt();
-        homePresenter.write(charac, "on", bluetoothGatt);
+        charac = settingsPresenter.getCharac();
+        bluetoothGatt = settingsPresenter.getGatt();
+        for (int i = 0; i < bluetoothGatt.size(); i++) {
+            homePresenter.write(charac.get(i), "on", bluetoothGatt.get(i));
+        }
 
         ColorPickerView colorPicker = view.findViewById(R.id.colorPicker);
         nf = NumberFormat.getIntegerInstance();
@@ -84,9 +90,10 @@ public class HomeFragment extends Fragment implements HomeContract.View {
             int r = Color.red(color);
             int g = Color.green(color);
             int b = Color.blue(color);
-            homePresenter.write(charac, "c" + nf.format(r) + " " + nf.format(g) + " " + nf.format(b), bluetoothGatt);
-            });
-
+            for (int i = 0; i < bluetoothGatt.size(); i++) {
+                homePresenter.write(charac.get(i), "c" + nf.format(r) + " " + nf.format(g) + " " + nf.format(b), bluetoothGatt.get(i));
+            }
+        });
         setupOnListener();
     }
 
@@ -95,10 +102,14 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         SettingsButton.setOnClickListener(v -> mainPresenter.navigateToSettingsFragment());
         OnOffBtn.setOnClickListener(v -> {
             if (!OnOffBtn.isActivated()) {
-                homePresenter.write(charac, "on", bluetoothGatt);
+                for(int i = 0; i < bluetoothGatt.size(); i++) {
+                    homePresenter.write(charac.get(i), "on", bluetoothGatt.get(i));
+                }
                 OnOffBtn.setActivated(true);
             } else {
-                homePresenter.write(charac, "off", bluetoothGatt);
+                for(int i = 0; i < bluetoothGatt.size(); i++) {
+                    homePresenter.write(charac.get(i), "off", bluetoothGatt.get(i));
+                }
                 OnOffBtn.setActivated(false);
             }
         });

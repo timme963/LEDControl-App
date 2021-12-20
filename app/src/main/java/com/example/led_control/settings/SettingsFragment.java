@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,10 +31,13 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
     private final MainPresenter mainPresenter;
     private final SettingsPresenter settingsPresenter;
     private BTConnectPresenter btConnectPresenter;
-    private BluetoothGattCharacteristic charac;
-    private BluetoothGatt bluetoothGatt;
+    private ArrayList<BluetoothGattCharacteristic> charac = new ArrayList<BluetoothGattCharacteristic>();
+    private ArrayList<BluetoothGatt> bluetoothGatt = new ArrayList<BluetoothGatt>();
     private ListView settingList;
     private int anzahl;
+    private BluetoothGatt currentGatt;
+    private BluetoothGattCharacteristic currentCharac;
+    private Spinner dropdown;
 
     public SettingsFragment(MainPresenter mainPresenter, SettingsPresenter settingsPresenter, BTConnectPresenter btConnectPresenter) {
         this.mainPresenter = mainPresenter;
@@ -55,7 +59,7 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
                 "Verbindungen",
                 "Beleuchtung",
                 "Effekte",
-                "Anzahl LEDs",
+                "Anzahl LEDs"
         };
 
         List<String> settingList = new ArrayList<>(Arrays.asList(listeArray));
@@ -89,11 +93,49 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
 
         settingList = view.findViewById(R.id.settingList);
 
+        dropdown = view.findViewById(R.id.spinner2);
+        ArrayList<String> items = new ArrayList<>();
+        for (BluetoothGatt i : bluetoothGatt) {
+            items.add(i.getDevice().getName());
+        }
+        items.add("Alle");
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),R.layout.list_item_settingslist, R.id.list_item_settingsliste_textview, items);
+        dropdown.setAdapter(adapter);
+        dropdown.setOnItemSelectedListener(click);
+
+        if (!dropdown.getSelectedItem().equals("Alle")) {
+            System.out.println(dropdown.getSelectedItem());
+            currentGatt = bluetoothGatt.get(bluetoothGatt.size() -1);
+            currentCharac = charac.get(charac.size() -1);
+            dropdown.setSelection(bluetoothGatt.size() -1);
+        } else {
+            dropdown.setSelection(items.size());
+        }
+
         setupOnListener();
     }
 
     private void setupOnListener() {
     }
+
+    private AdapterView.OnItemSelectedListener click = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            if (position >= bluetoothGatt.size()) {
+                currentGatt = null;
+                currentCharac = null;
+            } else {
+                currentGatt = bluetoothGatt.get(position);
+                currentCharac = charac.get(position);
+            }
+            dropdown.setSelection(position);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    };
 
     private AdapterView.OnItemClickListener listClick = new AdapterView.OnItemClickListener() {
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -119,7 +161,13 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
                             Editable editable = input.getText();
                             try {
                                 anzahl = Integer.parseInt(String.valueOf(editable));
-                                settingsPresenter.write(charac, "num" + anzahl, bluetoothGatt);
+                                if (currentGatt != null) {
+                                    settingsPresenter.write(currentCharac, "num" + anzahl, currentGatt);
+                                } else {
+                                    for (int i = 0; i < bluetoothGatt.size(); i++) {
+                                        settingsPresenter.write(charac.get(i), "num" + anzahl, bluetoothGatt.get(i));
+                                    }
+                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -130,6 +178,26 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
             }
         }
     };
+
+    public ArrayList<BluetoothGatt> getBluetoothGatt() {
+        if (currentGatt != null) {
+            ArrayList<BluetoothGatt> currentGatt = new ArrayList<BluetoothGatt>();
+            currentGatt.add(this.currentGatt);
+            return currentGatt;
+        } else {
+            return bluetoothGatt;
+        }
+    }
+
+    public ArrayList<BluetoothGattCharacteristic> getCharac() {
+        if (currentCharac != null) {
+            ArrayList<BluetoothGattCharacteristic> currentCharac = new ArrayList<BluetoothGattCharacteristic>();
+            currentCharac.add(this.currentCharac);
+            return currentCharac;
+        } else {
+            return charac;
+        }
+    }
 
     @Override
     public void onStop() {

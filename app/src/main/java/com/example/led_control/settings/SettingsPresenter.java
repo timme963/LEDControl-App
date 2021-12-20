@@ -12,6 +12,7 @@ import com.example.led_control.MainActivity;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
 public class SettingsPresenter implements SettingsContract.Presenter{
     private final MainActivity mainActivity;
@@ -55,5 +56,13 @@ public class SettingsPresenter implements SettingsContract.Presenter{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+    }
+
+    public ArrayList<BluetoothGatt> getGatt() {
+        return settingsFragment.getBluetoothGatt();
+    }
+
+    public ArrayList<BluetoothGattCharacteristic> getCharac() {
+        return settingsFragment.getCharac();
     }
 }

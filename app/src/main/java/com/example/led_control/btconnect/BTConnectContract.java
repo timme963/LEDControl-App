@@ -3,6 +3,8 @@ package com.example.led_control.btconnect;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 
+import java.util.ArrayList;
+
 public interface BTConnectContract {
     interface View {
         void showDevice(BluetoothDevice device); // from presenter to view
@@ -22,6 +24,6 @@ public interface BTConnectContract {
 
         Object getCharac();
 
-        BluetoothGatt getGatt();
+        ArrayList<BluetoothGatt> getGatt();
     }
 }

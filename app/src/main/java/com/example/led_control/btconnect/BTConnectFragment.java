@@ -19,6 +19,8 @@ import androidx.fragment.app.Fragment;
 import com.example.led_control.MainPresenter;
 import com.example.led_control.R;
 
+import java.util.ArrayList;
+
 public class BTConnectFragment extends Fragment implements BTConnectContract.View {
     private final MainPresenter mainPresenter;
     private final BTConnectPresenter btConnectPresenter;
@@ -29,7 +31,7 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
     Button stopScan;
     ImageButton btButton;
     LinearLayout deviceList;
-    BluetoothDevice connectedDevice;
+    ArrayList<BluetoothDevice> connectedDevice = new ArrayList<BluetoothDevice>();
     boolean btScan;
     boolean connected = false;
 
@@ -69,7 +71,9 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
             btButton.setBackgroundColor((int) 0xFFD0D3D3);
         }
         if (connectedDevice != null) {
-            showDevice(connectedDevice);
+            for (BluetoothDevice i : connectedDevice) {
+                showDevice(i);
+            }
         }
 
         setupOnListener();
@@ -79,7 +83,9 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
         scan.setOnClickListener(v -> {
             deviceList.removeAllViews();
             if (connectedDevice != null) {
-                showDevice(connectedDevice);
+                for (BluetoothDevice i : connectedDevice) {
+                    showDevice(i);
+                }
             }
             btScan = true;
             scan.setVisibility(View.INVISIBLE);
@@ -124,7 +130,7 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
     public void showDevice(BluetoothDevice device) {
         LinearLayout layout = new LinearLayout(getActivity());
         Button btn = new Button(getActivity());
-        if (device == connectedDevice) {
+        if (connectedDevice.contains(device)) {
             btn.setText("Disconnect");
         } else {
             btn.setText("Connect");
@@ -137,22 +143,22 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
         deviceList.addView(layout);
         btn.setOnClickListener(v -> {
             if (btn.getText() == "Connect") {
-                connectedDevice = device;
                 connected = btConnectPresenter.connectToDeviceSelected(device);
-                btn.setText("Disconnect");
                 if (connected) {
-                    handler.postDelayed(mainPresenter::navigateToHomeFragment, 3000);
+                    connectedDevice.add(device);
+                    btn.setText("Disconnect");
+                    handler.postDelayed(mainPresenter::navigateToSettingsFragment, 3000);
                 }
             } else {
-                btConnectPresenter.disconnectDeviceSelected();
+                btConnectPresenter.disconnectDeviceSelected(device);
                 btn.setText("Connect");
-                connectedDevice = null;
+                connectedDevice.remove(device);
                 connected = false;
             }
         });
         txt.setOnClickListener(v -> {
             if (connected) {
-                handler.postDelayed(mainPresenter::navigateToHomeFragment, 1000);
+                handler.postDelayed(mainPresenter::navigateToSettingsFragment, 1000);
             }
         });
     }

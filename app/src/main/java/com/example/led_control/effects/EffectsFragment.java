@@ -23,17 +23,20 @@ import androidx.fragment.app.Fragment;
 import com.example.led_control.MainPresenter;
 import com.example.led_control.R;
 import com.example.led_control.btconnect.BTConnectPresenter;
+import com.example.led_control.settings.SettingsPresenter;
 
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class EffectsFragment extends Fragment implements EffectsContract.View {
     private final MainPresenter mainPresenter;
     private final EffectsPresenter effectsPresenter;
-    private BluetoothGattCharacteristic charac;
-    private BluetoothGatt bluetoothGatt;
+    private final SettingsPresenter settingsPresenter;
+    private ArrayList<BluetoothGattCharacteristic> charac = new ArrayList<BluetoothGattCharacteristic>();
+    private ArrayList<BluetoothGatt> bluetoothGatt;
     private BTConnectPresenter btConnectPresenter;
     private ImageButton settingsBtn;
     private Button wakeUp;
@@ -46,10 +49,11 @@ public class EffectsFragment extends Fragment implements EffectsContract.View {
     private String signal;
     private String time;
 
-    public EffectsFragment(MainPresenter mainPresenter, EffectsPresenter effectsPresenter, BTConnectPresenter btConnectPresenter) {
+    public EffectsFragment(MainPresenter mainPresenter, EffectsPresenter effectsPresenter, BTConnectPresenter btConnectPresenter, SettingsPresenter settingsPresenter) {
         this.mainPresenter = mainPresenter;
         this.effectsPresenter = effectsPresenter;
         this.btConnectPresenter = btConnectPresenter;
+        this.settingsPresenter = settingsPresenter;
 
         effectsPresenter.setView(this);
     }
@@ -74,7 +78,9 @@ public class EffectsFragment extends Fragment implements EffectsContract.View {
         super.onViewCreated(view, savedInstanceState);
 
         charac = btConnectPresenter.getCharac();
-        bluetoothGatt = btConnectPresenter.getGatt();
+        //bluetoothGatt = btConnectPresenter.getGatt();
+        bluetoothGatt = settingsPresenter.getGatt();
+        charac = settingsPresenter.getCharac();
         kalender = Calendar.getInstance();
         zeitformat = new SimpleDateFormat("HH:mm");
 
@@ -86,6 +92,7 @@ public class EffectsFragment extends Fragment implements EffectsContract.View {
         //TODO mehr effekte?
         //TODO beacon?
         //TODO sound reaction?
+        //TODO background service
 
         setupOnListener();
     }
@@ -93,11 +100,15 @@ public class EffectsFragment extends Fragment implements EffectsContract.View {
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void setupOnListener() {
         settingsBtn.setOnClickListener(v -> mainPresenter.navigateToSettingsFragment());
-        colorChange.setOnClickListener(v -> effectsPresenter.write(charac, "colorChange", bluetoothGatt));//TODO Farben?!
+        colorChange.setOnClickListener(v -> {
+                    for(int i = 0; i < bluetoothGatt.size(); i++) {
+                        effectsPresenter.write(charac.get(i), "eColor" + "1000", bluetoothGatt.get(i));
+                    }
+        });//TODO Farben und variables intervall?!
         blink.setOnClickListener(v -> {
             time = zeitformat.format(kalender.getTime());
             signal = time;
-            generateIntervallPopUp("blink");
+            generateIntervallPopUp("eblink");
         });
         goSleep.setOnClickListener(v -> {
             time = zeitformat.format(kalender.getTime());
@@ -123,13 +134,17 @@ public class EffectsFragment extends Fragment implements EffectsContract.View {
                                 LocalTime.parse(signal)).toMillis();
                         if (signal.equals(time)) {
                             intervall = Integer.parseInt(String.valueOf(editable));
-                            effectsPresenter.write(charac, effect + intervall, bluetoothGatt);
+                            for(int i = 0; i < bluetoothGatt.size(); i++) {
+                                effectsPresenter.write(charac.get(i), effect + intervall, bluetoothGatt.get(i));
+                            }
                         } else {
                             if (millisBetween > 0) {
                                 Handler handler = new Handler();
                                 handler.postDelayed(() -> {
                                     intervall = Integer.parseInt(String.valueOf(editable));
-                                    effectsPresenter.write(charac, effect + intervall, bluetoothGatt);
+                                    for(int i = 0; i < bluetoothGatt.size(); i++) {
+                                        effectsPresenter.write(charac.get(i), effect + intervall, bluetoothGatt.get(i));
+                                    }
                                 }, millisBetween);
                             }
                         }

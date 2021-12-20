@@ -30,13 +30,13 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
     private static final String TAG = "LED-ControlAPP";
     // Stops scanning after 5 seconds.
 
-    BluetoothGattCharacteristic charac;
     BluetoothManager btManager;
     BluetoothAdapter btAdapter;
     BluetoothLeScanner btScanner;
-    BluetoothGatt bluetoothGatt;
 
     ArrayList<BluetoothDevice> devicesDiscovered = new ArrayList<>();
+    ArrayList<BluetoothGatt> bluetoothGatt = new ArrayList<BluetoothGatt>();
+    ArrayList<BluetoothGattCharacteristic> charac = new ArrayList<BluetoothGattCharacteristic>();
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public BTConnectPresenter(MainActivity mainActivity) {
@@ -67,12 +67,12 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
     }
 
     @Override
-    public BluetoothGattCharacteristic getCharac() {
+    public ArrayList<BluetoothGattCharacteristic> getCharac() {
         return charac;
     }
 
     @Override
-    public BluetoothGatt getGatt() {
+    public ArrayList<BluetoothGatt> getGatt() {
         return bluetoothGatt;
     }
 
@@ -107,7 +107,7 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
             switch (newState) {
                 case 0:
                         Log.i(TAG, "device disconnected\n");
-                        btConnectFragment.connectedDevice = null;
+                        btConnectFragment.connectedDevice.remove(gatt.getDevice());
                         btConnectFragment.connected = false;
                         btConnectFragment.deviceList.removeAllViews();
                         mainActivity.navigateToConnectFragment();
@@ -115,7 +115,7 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
                 case 2:
                         Log.i(TAG, "device connected\n");
                     // discover services and characteristics for this device
-                    bluetoothGatt.discoverServices();
+                    gatt.discoverServices();
                     break;
                 default:
                     Log.i(TAG, "we encounterned an unknown state, uh oh\n");
@@ -125,7 +125,7 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
 
         @Override
         public void onServicesDiscovered(final BluetoothGatt gatt, final int status) {
-            displayGattServices(bluetoothGatt.getServices());
+            displayGattServices(gatt.getServices());
         }
 
         @Override
@@ -145,12 +145,18 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
     }
 
     public boolean connectToDeviceSelected(BluetoothDevice device) {
-        bluetoothGatt = device.connectGatt(mainActivity.getApplicationContext(), false, btleGattCallback);
-        return bluetoothGatt != null;
+        bluetoothGatt.add(device.connectGatt(mainActivity.getApplicationContext(),true, btleGattCallback));
+        return true;
     }
 
-    public void disconnectDeviceSelected() {
-        bluetoothGatt.disconnect();
+    public void disconnectDeviceSelected(BluetoothDevice device) {
+        for (int i = 0; i < bluetoothGatt.size(); i++) {
+            if (bluetoothGatt.get(i).getDevice().equals(device)) {
+                bluetoothGatt.get(i).disconnect();
+                bluetoothGatt.remove(bluetoothGatt.get(i));
+                charac.remove(charac.get(i));
+            }
+        }
     }
 
     private void displayGattServices(List<BluetoothGattService> gattServices) {
@@ -169,11 +175,12 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
             for (BluetoothGattCharacteristic gattCharacteristic :
                     gattCharacteristics) {
 
-                charac = gattCharacteristic;
                 final String charUuid = gattCharacteristic.getUuid().toString();
                 Log.i(TAG,"Characteristic discovered for service: " + charUuid);
 
             }
         }
+        charac.add(gattServices.get(gattServices.size()-1).getCharacteristics().get(
+                gattServices.get(gattServices.size()-1).getCharacteristics().size() -1));
     }
 }

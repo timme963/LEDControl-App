@@ -56,10 +56,10 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         TitlePresenter titlePresenter = new TitlePresenter(this);
 
         //Setup Fragments
-        homeFragment = new HomeFragment(mainPresenter, homePresenter, btConnectPresenter);
+        homeFragment = new HomeFragment(mainPresenter, homePresenter, btConnectPresenter, settingsPresenter);
         btConnectFragment = new BTConnectFragment(mainPresenter, btConnectPresenter);
         settingsFragment = new SettingsFragment(mainPresenter, settingsPresenter, btConnectPresenter);
-        effectsFragment = new EffectsFragment(mainPresenter, effectsPresenter, btConnectPresenter);
+        effectsFragment = new EffectsFragment(mainPresenter, effectsPresenter, btConnectPresenter, settingsPresenter);
         TitleFragment titleFragment = new TitleFragment(mainPresenter, titlePresenter);
 
         // set homeFragment
