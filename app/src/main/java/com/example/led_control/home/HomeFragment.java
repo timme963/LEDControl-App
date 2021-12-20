@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
@@ -31,7 +32,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     private final SettingsPresenter settingsPresenter;
     private HomePresenter homePresenter;
     private BTConnectPresenter btConnectPresenter;
-    private ImageButton SettingsButton;
+    private ImageView SettingsButton;
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private ToggleButton OnOffBtn;
     private Button effect;

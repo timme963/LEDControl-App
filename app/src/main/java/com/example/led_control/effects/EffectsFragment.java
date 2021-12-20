@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,7 +39,7 @@ public class EffectsFragment extends Fragment implements EffectsContract.View {
     private ArrayList<BluetoothGattCharacteristic> charac = new ArrayList<>();
     private ArrayList<BluetoothGatt> bluetoothGatt;
     private BTConnectPresenter btConnectPresenter;
-    private ImageButton settingsBtn;
+    private ImageView settingsBtn;
     private Button wakeUp;
     private Button goSleep;
     private Button blink;
@@ -77,8 +78,6 @@ public class EffectsFragment extends Fragment implements EffectsContract.View {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        charac = btConnectPresenter.getCharac();
-        //bluetoothGatt = btConnectPresenter.getGatt();
         bluetoothGatt = settingsPresenter.getGatt();
         charac = settingsPresenter.getCharac();
         kalender = Calendar.getInstance();
