@@ -49,6 +49,8 @@ public class EffectsFragment extends Fragment implements EffectsContract.View {
     private int intervall;
     private String signal;
     private String time;
+    private Button fire;
+    private Button cylon;
 
     public EffectsFragment(MainPresenter mainPresenter, EffectsPresenter effectsPresenter, BTConnectPresenter btConnectPresenter, SettingsPresenter settingsPresenter) {
         this.mainPresenter = mainPresenter;
@@ -88,6 +90,9 @@ public class EffectsFragment extends Fragment implements EffectsContract.View {
         goSleep = view.findViewById(R.id.goSleep);
         colorChange = view.findViewById(R.id.colorChange);
         blink = view.findViewById(R.id.blink);
+        fire = view.findViewById(R.id.fire);
+        cylon = view.findViewById(R.id.cylon);
+
         //TODO mehr effekte?
         //TODO beacon?
         //TODO sound reaction?
@@ -116,6 +121,16 @@ public class EffectsFragment extends Fragment implements EffectsContract.View {
         wakeUp.setOnClickListener(v -> {
             time = zeitformat.format(kalender.getTime());
             generateTimePopUp("wakeup");
+        });
+        cylon.setOnClickListener(v -> {
+            for(int i = 0; i < bluetoothGatt.size(); i++) {
+                effectsPresenter.write(charac.get(i), "ecylon", bluetoothGatt.get(i));
+            }
+        });
+        fire.setOnClickListener(v -> {
+            for(int i = 0; i < bluetoothGatt.size(); i++) {
+                effectsPresenter.write(charac.get(i), "efiree", bluetoothGatt.get(i));
+            }
         });
     }
 

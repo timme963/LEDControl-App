@@ -5,6 +5,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <Button
+        android:id="@+id/fire"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="30dp"
+        android:text="Fire"
+        app:layout_constraintEnd_toEndOf="@+id/colorChange"
+        app:layout_constraintStart_toEndOf="@+id/cylon"
+        app:layout_constraintTop_toBottomOf="@+id/colorChange" />
+
+    <Button
+        android:id="@+id/cylon"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="30dp"
+        android:text="Cylon"
+        app:layout_constraintEnd_toEndOf="@+id/wakeUp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/blink" />
+
     <ImageView
         android:id="@+id/settingsBtn"
         android:layout_width="49dp"
