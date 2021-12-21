@@ -106,9 +106,9 @@ public class EffectsFragment extends Fragment implements EffectsContract.View {
         settingsBtn.setOnClickListener(v -> mainPresenter.navigateToSettingsFragment());
         colorChange.setOnClickListener(v -> {
                     for(int i = 0; i < bluetoothGatt.size(); i++) {
-                        effectsPresenter.write(charac.get(i), "eColor" + "1000", bluetoothGatt.get(i));
+                        effectsPresenter.write(charac.get(i), "eColor", bluetoothGatt.get(i));
                     }
-        });//TODO Farben und variables intervall?!
+        });
         blink.setOnClickListener(v -> {
             time = zeitformat.format(kalender.getTime());
             signal = time;
