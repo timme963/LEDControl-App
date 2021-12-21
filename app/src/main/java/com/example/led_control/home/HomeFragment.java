@@ -36,9 +36,10 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private ToggleButton OnOffBtn;
     private Button effect;
+    private ColorPickerView colorPicker;
     private ArrayList<BluetoothGattCharacteristic> charac = new ArrayList<>();
     private ArrayList<BluetoothGatt> bluetoothGatt = new ArrayList<>();
-    NumberFormat nf;
+    private NumberFormat nf;
 
     public HomeFragment(MainPresenter mainPresenter, HomePresenter homePresenter, BTConnectPresenter btConnectPresenter, SettingsPresenter settingsPresenter) {
         this.mainPresenter = mainPresenter;
@@ -80,7 +81,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
             homePresenter.write(charac.get(i), "on", bluetoothGatt.get(i));
         }
 
-        ColorPickerView colorPicker = view.findViewById(R.id.colorPicker);
+        colorPicker = view.findViewById(R.id.colorPicker);
         nf = NumberFormat.getIntegerInstance();
         nf.setMinimumIntegerDigits(3);
         nf.setGroupingUsed(false);
