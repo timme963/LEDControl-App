@@ -104,7 +104,6 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
         dropdown.setOnItemSelectedListener(click);
 
         if (!dropdown.getSelectedItem().equals("Alle")) {
-            System.out.println(dropdown.getSelectedItem());
             currentGatt = bluetoothGatt.get(bluetoothGatt.size() -1);
             currentCharac = charac.get(charac.size() -1);
             dropdown.setSelection(bluetoothGatt.size() -1);
@@ -112,6 +111,7 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
             dropdown.setSelection(items.size());
         }
 
+        btConnectPresenter.sendConnected();
         setupOnListener();
     }
 

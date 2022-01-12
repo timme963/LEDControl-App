@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -147,5 +148,9 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                 .beginTransaction()
                 .replace(R.id.fragment_container, settingsFragment)
                 .commit();
+    }
+
+    public HomeFragment getHomeFragment() {
+        return homeFragment;
     }
 }

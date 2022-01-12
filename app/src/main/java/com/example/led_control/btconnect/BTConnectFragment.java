@@ -2,6 +2,7 @@ package com.example.led_control.btconnect;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.example.led_control.MainPresenter;
@@ -55,6 +57,7 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
     /**
      * Second method where the view is ready to use
      */
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -66,7 +69,7 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
         deviceList = view.findViewById(R.id.BTDeviceList);
 
         if (btConnectPresenter.btAdapter.isEnabled()) {
-            btButton.setBackgroundColor(0xFF1C9191);
+            btButton.setBackgroundColor(0xFFBB86FC);
         } else {
             btButton.setBackgroundColor(0xFFD0D3D3);
         }
@@ -79,6 +82,7 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
         setupOnListener();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     private void setupOnListener() {
         scan.setOnClickListener(v -> {
             deviceList.removeAllViews();
@@ -91,7 +95,6 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
             scan.setVisibility(View.INVISIBLE);
             stopScan.setVisibility(View.VISIBLE);
             btConnectPresenter.startScan();
-
 
             handler.postDelayed(() -> {
                 scan.setVisibility(View.VISIBLE);
@@ -112,7 +115,7 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
         btButton.setOnClickListener(v -> {
             if (!btConnectPresenter.btAdapter.isEnabled()) {
                 btConnectPresenter.btAdapter.enable();
-                btButton.setBackgroundColor(0xFF1C9191);
+                btButton.setBackgroundColor(0xFFBB86FC);
             } else {
                 btConnectPresenter.btAdapter.disable();
                 btButton.setBackgroundColor(0xFFD0D3D3);
@@ -125,6 +128,7 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
         super.onStop();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     @SuppressLint("SetTextI18n")
     @Override
     public void showDevice(BluetoothDevice device) {
@@ -138,7 +142,10 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
         TextView txt = new TextView(getActivity());
         txt.setText(device.getName());
         txt.setPadding(10,0,50,0);
+        txt.setMaxWidth(550);
+        txt.setMinWidth(550);
         layout.addView(txt);
+        btn.setMinWidth(400);
         layout.addView(btn);
         deviceList.addView(layout);
         btn.setOnClickListener(v -> {
@@ -162,5 +169,4 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
             }
         });
     }
-
 }
