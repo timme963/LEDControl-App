@@ -25,5 +25,7 @@ public interface BTConnectContract {
         Object getCharac();
 
         ArrayList<BluetoothGatt> getGatt();
+
+        String getbtName();
     }
 }

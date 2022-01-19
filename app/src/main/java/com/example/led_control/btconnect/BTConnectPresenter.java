@@ -7,26 +7,31 @@ import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.le.AdvertiseCallback;
+import android.bluetooth.le.AdvertiseData;
+import android.bluetooth.le.AdvertiseSettings;
+import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.ParcelUuid;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
 import com.example.led_control.MainActivity;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class BTConnectPresenter implements BTConnectContract.Presenter {
+    private static final ParcelUuid SERVICE_UUID = ParcelUuid.fromString("CDB7950D-73F1-4D4D-8E47-C090502DBD63");
     private final MainActivity mainActivity;
     private BTConnectFragment btConnectFragment;
 
@@ -43,6 +48,7 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
     int color;
     String bright;
     private boolean connected;
+    private BluetoothLeAdvertiser advertiser;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public BTConnectPresenter(MainActivity mainActivity) {
@@ -84,6 +90,11 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
     @Override
     public ArrayList<BluetoothGatt> getGatt() {
         return bluetoothGatt;
+    }
+
+    @Override
+    public String getbtName() {
+        return btAdapter.getName();
     }
 
     // Device scan callback.
@@ -234,29 +245,49 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
         bluetoothGatt.get(bluetoothGatt.size()-1).setCharacteristicNotification(charac.get(charac.size()-1), true);
     }
 
-    public void writeCharacteristic(BluetoothGattCharacteristic characteristic,
-                                    String data, BluetoothGatt bluetoothGatt) {
-        if (btAdapter == null || bluetoothGatt == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
-        }
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void advertising() {
+        //https://code.tutsplus.com/tutorials/how-to-advertise-android-as-a-bluetooth-le-peripheral--cms-25426
+        advertiser = BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser();
+        AdvertiseSettings settings = new AdvertiseSettings.Builder()
+                .build();
 
-        Log.i(TAG, "characteristic " + characteristic.toString());
-        try {
-            Log.i(TAG, "data " + URLEncoder.encode(data, "utf-8"));
+        ParcelUuid pUuid = new ParcelUuid(UUID.randomUUID());
 
-            characteristic.setValue(URLEncoder.encode(data, "utf-8"));
+        AdvertiseData data = new AdvertiseData.Builder()
+                .setIncludeDeviceName(true)
+                .addServiceData(pUuid, "D".getBytes())
+                .build();
 
-            bluetoothGatt.writeCharacteristic(characteristic);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        System.out.println(data.getManufacturerSpecificData() + "#########");
+        System.out.println(data.getServiceData() + " 44444444");
+
+        AdvertiseCallback advertiseCallback = new AdvertiseCallback() {
+            @Override
+            public void onStartSuccess(AdvertiseSettings settingsInEffect) {
+                super.onStartSuccess(settingsInEffect);
+                Log.i(TAG, "onStartSuccess: ");
+            }
+
+            @Override
+            public void onStartFailure(int errorCode) {
+                super.onStartFailure(errorCode);
+                Log.e(TAG, "onStartFailure: " + errorCode);
+            }
+        };
+        advertiser.startAdvertising(settings, data, advertiseCallback);
     }
 
-    public void sendConnected() {
+    public void stopAdvertising() {
+        AdvertiseCallback advertiseCallback = new AdvertiseCallback() {};
+        advertiser.stopAdvertising(advertiseCallback);
+    }
+
+    public boolean sendConnected() {
         if (!connected) {
-            writeCharacteristic(charac.get(charac.size()-1), "connected", bluetoothGatt.get(charac.size()-1));
             connected = true;
+            return true;
         }
+        return false;
     }
 }

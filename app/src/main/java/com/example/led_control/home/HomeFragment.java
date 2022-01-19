@@ -77,6 +77,9 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         OnOffBtn.setChecked(true);
         OnOffBtn.setEnabled(true);
 
+        charac = settingsPresenter.getCharac();
+        bluetoothGatt = settingsPresenter.getGatt();
+
         if (btConnectPresenter.getBright() != null) {
             if (btConnectPresenter.getBright().equals("0")) {
                 OnOffBtn.setActivated(false);
@@ -87,15 +90,10 @@ public class HomeFragment extends Fragment implements HomeContract.View {
             }
         }
 
-        charac = settingsPresenter.getCharac();
-        bluetoothGatt = settingsPresenter.getGatt();
-
         colorPicker = view.findViewById(R.id.colorPicker);
         nf = NumberFormat.getIntegerInstance();
         nf.setMinimumIntegerDigits(3);
         nf.setGroupingUsed(false);
-
-        //colorPicker.setInitialColor(0x7F313C93); // if you want to set a color when you open home
 
         //load last color
         /*final int[] colour = new int[1];
@@ -132,6 +130,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void setColor(int color) {
         colorPicker.setInitialColor(color);
+        colorPicker.reset();
     }
 
     @SuppressLint("ClickableViewAccessibility")

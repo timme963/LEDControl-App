@@ -3,7 +3,9 @@ package com.example.led_control.settings;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +18,7 @@ import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
@@ -23,8 +26,10 @@ import com.example.led_control.MainPresenter;
 import com.example.led_control.R;
 import com.example.led_control.btconnect.BTConnectPresenter;
 
+import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class SettingsFragment extends Fragment implements SettingsContract.View {
@@ -59,7 +64,9 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
                 "Verbindungen",
                 "Beleuchtung",
                 "Effekte",
-                "Anzahl LEDs"
+                "Anzahl LEDs",
+                "Anwesenheitserkennung"
+
         };
 
         List<String> settingList = new ArrayList<>(Arrays.asList(listeArray));
@@ -111,7 +118,10 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
             dropdown.setSelection(items.size());
         }
 
-        btConnectPresenter.sendConnected();
+        if (btConnectPresenter.sendConnected()) {
+            String mName = btConnectPresenter.getbtName();
+            settingsPresenter.write(currentCharac, "m" + mName, currentGatt);
+        }
         setupOnListener();
     }
 
@@ -138,6 +148,7 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
     };
 
     private final AdapterView.OnItemClickListener listClick = new AdapterView.OnItemClickListener() {
+        @RequiresApi(api = Build.VERSION_CODES.O)
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 
             String itemValue = settingList.getItemAtPosition(position).toString();
@@ -149,6 +160,38 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
             }
             if (itemValue.equals("Effekte")) {
                 mainPresenter.navigateToEffectsFragment();
+            }
+            if (itemValue.equals("Anwesenheitserkennung")) {
+                new AlertDialog.Builder(requireActivity())
+                        .setTitle("Anwesenheitserkennung")
+                        .setPositiveButton("Ein", (dialog, whichButton) -> {
+                            try {
+                                if (currentGatt != null) {
+                                    settingsPresenter.writeCharacteristic(currentCharac, "beacon ein", currentGatt);
+                                } else {
+                                    for (int i = 0; i < bluetoothGatt.size(); i++) {
+                                        settingsPresenter.writeCharacteristic(charac.get(i), "beacon ein", bluetoothGatt.get(i));
+                                    }
+                                }
+                                btConnectPresenter.advertising();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        })
+                        .setNegativeButton("Aus", (dialog, whichButton) -> {
+                            try {
+                                if (currentGatt != null) {
+                                    settingsPresenter.write(currentCharac, "beacon aus", currentGatt);
+                                } else {
+                                    for (int i = 0; i < bluetoothGatt.size(); i++) {
+                                        settingsPresenter.write(charac.get(i), "beacon aus", bluetoothGatt.get(i));
+                                    }
+                                }
+                                btConnectPresenter.stopAdvertising();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }).show();
             }
             if (itemValue.equals("Anzahl LEDs")) {
 
