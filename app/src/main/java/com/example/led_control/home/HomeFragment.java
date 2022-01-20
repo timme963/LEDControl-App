@@ -95,21 +95,13 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         nf.setMinimumIntegerDigits(3);
         nf.setGroupingUsed(false);
 
-        //load last color
-        /*final int[] colour = new int[1];
-        if (btConnectPresenter.getColor() != 0) {
-            colour[0] = (btConnectPresenter.getColor());
-            colorPicker.setInitialColor(colour[0]);
-        } else {
-            colorPicker.setInitialColor(0x00000000);
-        }*/
         if (colour != 0) {
             colorPicker.setInitialColor(colour);
+        } else {
+            colorPicker.setInitialColor(btConnectPresenter.getColor());
         }
 
         colorPicker.subscribe((color, fromUser, shouldPropagate) -> {
-            //if (color != colour[0]) {
-                //colour[0] = color;
                 int r = Color.red(color);
                 int g = Color.green(color);
                 int b = Color.blue(color);
@@ -117,7 +109,6 @@ public class HomeFragment extends Fragment implements HomeContract.View {
                     homePresenter.write(charac.get(i), "c" + nf.format(r) + " " + nf.format(g) + " " + nf.format(b), bluetoothGatt.get(i));
                 }
                 colour = color;
-            //}
         });
 
         setupOnListener();

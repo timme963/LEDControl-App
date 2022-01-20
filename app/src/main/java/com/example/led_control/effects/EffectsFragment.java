@@ -93,9 +93,9 @@ public class EffectsFragment extends Fragment implements EffectsContract.View {
         fire = view.findViewById(R.id.fire);
         cylon = view.findViewById(R.id.cylon);
 
-        //TODO beacon?
         //TODO sound reaction?
         //TODO background service
+        //TODO shared preferences & save connected devices
 
         setupOnListener();
     }

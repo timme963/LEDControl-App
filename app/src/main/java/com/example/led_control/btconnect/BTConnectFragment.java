@@ -141,7 +141,7 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
         }
         TextView txt = new TextView(getActivity());
         txt.setText(device.getName());
-        txt.setPadding(10,0,50,0);
+        txt.setPadding(20,0,50,0);
         txt.setMaxWidth(550);
         txt.setMinWidth(550);
         layout.addView(txt);

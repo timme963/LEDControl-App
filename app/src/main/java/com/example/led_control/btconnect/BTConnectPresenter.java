@@ -178,19 +178,18 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
             bright = newData.substring(1);
         }
         if (newData.startsWith("c")) {
-            int color1 = Integer.parseInt(newData.substring(0,3));
+            int color1 = Integer.parseInt(newData.substring(1,4));
             int color2 = Integer.parseInt(newData.substring(4,7));
-            int color3 = Integer.parseInt(newData.substring(8));
+            int color3 = Integer.parseInt(newData.substring(7));
             color = intColor(color1, color2, color3);
-            //color = Integer.parseInt(newData.substring(1));
         }
         if (mainActivity.getHomeFragment() != null) {
             if (newData.startsWith("b")) {
                 mainActivity.getHomeFragment().setBrightness(newData.substring(1).equals("255"));
             }
-            if (newData.startsWith("c")){
+            /*if (newData.startsWith("c")){
                 mainActivity.getHomeFragment().setColor(color);
-            }
+            }*/
         }
         System.out.println(newData);
     }
@@ -258,9 +257,6 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
                 .setIncludeDeviceName(true)
                 .addServiceData(pUuid, "D".getBytes())
                 .build();
-
-        System.out.println(data.getManufacturerSpecificData() + "#########");
-        System.out.println(data.getServiceData() + " 44444444");
 
         AdvertiseCallback advertiseCallback = new AdvertiseCallback() {
             @Override
