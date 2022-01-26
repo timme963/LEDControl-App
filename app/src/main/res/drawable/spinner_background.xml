@@ -1,0 +1,8 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item>
+        <shape>
+            <solid android:color="@color/grey"/>
+        </shape>
+    </item>
+    <item android:gravity="center_vertical|right" android:end="10dp" android:drawable="@drawable/ic_arrow_up" />
+</layer-list>

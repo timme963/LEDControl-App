@@ -5,16 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="40dp"
-        android:layout_height="32dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/einstellungen" />
-
     <TextView
         android:id="@+id/textView8"
         android:layout_width="wrap_content"
@@ -30,12 +20,11 @@
         android:id="@+id/settingList"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_marginStart="10dp"
         android:layout_marginTop="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView8" >
+        app:layout_constraintTop_toBottomOf="@+id/textView8">
 
     </ListView>
 
@@ -43,7 +32,8 @@
         android:id="@+id/spinner2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:background="@drawable/spinner_background"
+        android:popupBackground="@color/grey"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
