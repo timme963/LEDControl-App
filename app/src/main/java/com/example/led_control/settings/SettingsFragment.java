@@ -5,7 +5,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.ParcelUuid;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,10 +26,8 @@ import com.example.led_control.MainPresenter;
 import com.example.led_control.R;
 import com.example.led_control.btconnect.BTConnectPresenter;
 
-import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class SettingsFragment extends Fragment implements SettingsContract.View {
@@ -118,8 +116,9 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
             dropdown.setSelection(items.size());
         }
 
+        // send device data to ESP
         if (btConnectPresenter.sendConnected()) {
-            String mName = btConnectPresenter.getbtName();
+            ParcelUuid mName = btConnectPresenter.getBTName();
             settingsPresenter.write(currentCharac, "m" + mName, currentGatt);
         }
         setupOnListener();
@@ -128,6 +127,7 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
     private void setupOnListener() {
     }
 
+    // sets characteristics and gatt based on user choice
     private final AdapterView.OnItemSelectedListener click = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -147,6 +147,7 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
         }
     };
 
+    // do stuff based on list click
     private final AdapterView.OnItemClickListener listClick = new AdapterView.OnItemClickListener() {
         @RequiresApi(api = Build.VERSION_CODES.O)
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {

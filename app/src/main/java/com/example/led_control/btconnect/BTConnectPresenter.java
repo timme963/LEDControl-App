@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class BTConnectPresenter implements BTConnectContract.Presenter {
-    private static final ParcelUuid SERVICE_UUID = ParcelUuid.fromString("CDB7950D-73F1-4D4D-8E47-C090502DBD63");
+    private static final ParcelUuid SERVICE_UUID = new ParcelUuid(UUID.randomUUID());
     private final MainActivity mainActivity;
     private BTConnectFragment btConnectFragment;
 
@@ -93,8 +93,8 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
     }
 
     @Override
-    public String getbtName() {
-        return btAdapter.getName();
+    public ParcelUuid getBTName() {
+        return SERVICE_UUID;
     }
 
     // Device scan callback.
@@ -162,6 +162,7 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
         }
     };
 
+    // convert received color data in correct format
     private int intColor(int color1, int color2, int color3) {
         int Red = (color1 << 16) & 0x00FF0000; //Shift red 16-bits and mask out other stuff
         int Green = (color2 << 8) & 0x0000FF00; //Shift Green 8-bits and mask out other stuff
@@ -171,6 +172,7 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
+    // receive data from esp and update app
     private void broadcastUpdate(final BluetoothGattCharacteristic characteristic) {
         Log.i(TAG, characteristic.getUuid().toString());
         String newData = new String(characteristic.getValue(), StandardCharsets.UTF_8);
@@ -249,13 +251,11 @@ public class BTConnectPresenter implements BTConnectContract.Presenter {
         //https://code.tutsplus.com/tutorials/how-to-advertise-android-as-a-bluetooth-le-peripheral--cms-25426
         advertiser = BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser();
         AdvertiseSettings settings = new AdvertiseSettings.Builder()
+                .setConnectable(false)
                 .build();
 
-        ParcelUuid pUuid = new ParcelUuid(UUID.randomUUID());
-
         AdvertiseData data = new AdvertiseData.Builder()
-                .setIncludeDeviceName(true)
-                .addServiceData(pUuid, "D".getBytes())
+                .addServiceData(SERVICE_UUID, "D".getBytes())
                 .build();
 
         AdvertiseCallback advertiseCallback = new AdvertiseCallback() {

@@ -80,6 +80,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         charac = settingsPresenter.getCharac();
         bluetoothGatt = settingsPresenter.getGatt();
 
+        // set saved on/off state
         if (btConnectPresenter.getBright() != null) {
             if (btConnectPresenter.getBright().equals("0")) {
                 OnOffBtn.setActivated(false);
@@ -90,17 +91,20 @@ public class HomeFragment extends Fragment implements HomeContract.View {
             }
         }
 
+        // color format
         colorPicker = view.findViewById(R.id.colorPicker);
         nf = NumberFormat.getIntegerInstance();
         nf.setMinimumIntegerDigits(3);
         nf.setGroupingUsed(false);
 
+        // set saved color
         if (colour != 0) {
             colorPicker.setInitialColor(colour);
         } else {
             colorPicker.setInitialColor(btConnectPresenter.getColor());
         }
 
+        // color listener and update color
         colorPicker.subscribe((color, fromUser, shouldPropagate) -> {
                 int r = Color.red(color);
                 int g = Color.green(color);
@@ -126,6 +130,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
 
     @SuppressLint("ClickableViewAccessibility")
     private void setupOnListener() {
+        // Button logic and send the data to esp
         SettingsButton.setOnClickListener(v -> mainPresenter.navigateToSettingsFragment());
         OnOffBtn.setOnClickListener(v -> {
             if (!OnOffBtn.isActivated()) {

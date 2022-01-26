@@ -73,6 +73,7 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
         } else {
             btButton.setBackgroundColor(0xFFD0D3D3);
         }
+        // show connected devices
         if (connectedDevice != null) {
             for (BluetoothDevice i : connectedDevice) {
                 showDevice(i);
@@ -84,6 +85,7 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     private void setupOnListener() {
+        // scan for ble devices and show them in a list
         scan.setOnClickListener(v -> {
             deviceList.removeAllViews();
             if (connectedDevice != null) {
@@ -112,6 +114,7 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
             btScan = false;
         });
 
+        // set btbutton
         btButton.setOnClickListener(v -> {
             if (!btConnectPresenter.btAdapter.isEnabled()) {
                 btConnectPresenter.btAdapter.enable();
@@ -131,7 +134,9 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @SuppressLint("SetTextI18n")
     @Override
+    // list with daveice name and connect/disconnect button
     public void showDevice(BluetoothDevice device) {
+        // set name and button
         LinearLayout layout = new LinearLayout(getActivity());
         Button btn = new Button(getActivity());
         if (connectedDevice.contains(device)) {
@@ -148,6 +153,7 @@ public class BTConnectFragment extends Fragment implements BTConnectContract.Vie
         btn.setMinWidth(400);
         layout.addView(btn);
         deviceList.addView(layout);
+        // set button click listener
         btn.setOnClickListener(v -> {
             if (btn.getText() == "Connect") {
                 connected = btConnectPresenter.connectToDeviceSelected(device);

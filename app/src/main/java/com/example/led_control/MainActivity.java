@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     private final static int REQUEST_ENABLE_BT = 1;
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
-    // Stops scanning after 5 seconds.
 
     BluetoothManager btManager;
     BluetoothAdapter btAdapter;
@@ -91,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
+    // checkt ob alle Berechtigungen gegeben sind
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         ActivityCompat.requestPermissions(

@@ -2,6 +2,7 @@ package com.example.led_control.btconnect;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
+import android.os.ParcelUuid;
 
 import java.util.ArrayList;
 
@@ -26,6 +27,6 @@ public interface BTConnectContract {
 
         ArrayList<BluetoothGatt> getGatt();
 
-        String getbtName();
+        ParcelUuid getBTName();
     }
 }

@@ -35,9 +35,8 @@ public class SettingsPresenter implements SettingsContract.Presenter{
         this.settingsFragment = settingsFragment;
     }
 
-    public Runnable write(BluetoothGattCharacteristic charac, String data, BluetoothGatt Gatt) {
+    public void write(BluetoothGattCharacteristic charac, String data, BluetoothGatt Gatt) {
         writeCharacteristic(charac, data, Gatt);
-        return null;
     }
 
     public void writeCharacteristic(BluetoothGattCharacteristic characteristic,
