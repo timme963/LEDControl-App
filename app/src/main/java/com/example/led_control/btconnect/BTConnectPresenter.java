@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+// Teile dieser Klasse sind von https://github.com/joelwass/Android-BLE-Connect-Example
 public class BTConnectPresenter implements BTConnectContract.Presenter {
     private static final ParcelUuid SERVICE_UUID = new ParcelUuid(UUID.randomUUID());
     private final MainActivity mainActivity;

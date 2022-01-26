@@ -92,6 +92,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         }
 
         // color format
+        //https://www.java-forum.org/thema/bei-integer-mehr-stellen-als-noetig-ausgeben-0006.19767/
         colorPicker = view.findViewById(R.id.colorPicker);
         nf = NumberFormat.getIntegerInstance();
         nf.setMinimumIntegerDigits(3);
@@ -105,6 +106,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         }
 
         // color listener and update color
+        //https://github.com/duanhong169/ColorPicker
         colorPicker.subscribe((color, fromUser, shouldPropagate) -> {
                 int r = Color.red(color);
                 int g = Color.green(color);

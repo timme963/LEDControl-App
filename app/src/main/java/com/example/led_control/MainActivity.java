@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     // checkt ob alle Berechtigungen gegeben sind
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        //https://stackoverflow.com/questions/58428763/android-10-not-working-with-ble-bluetooth-scanning
         ActivityCompat.requestPermissions(
                 this,
                 new String[]

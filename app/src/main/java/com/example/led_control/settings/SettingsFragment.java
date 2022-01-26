@@ -57,7 +57,7 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
+        //https://www.programmierenlernenhq.de/programmier-tutorial-android-listview-verwenden/
         String [] listeArray = {
                 "Verbindungen",
                 "Beleuchtung",
@@ -98,6 +98,7 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
 
         settingList = view.findViewById(R.id.settingList);
 
+        //https://www.programmierenlernenhq.de/programmier-tutorial-android-listview-verwenden/
         dropdown = view.findViewById(R.id.spinner2);
         ArrayList<String> items = new ArrayList<>();
         for (BluetoothGatt i : bluetoothGatt) {
