@@ -84,6 +84,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
         if (btConnectPresenter.getBright() != null) {
             if (btConnectPresenter.getBright().equals("0")) {
                 OnOffBtn.setActivated(false);
+                OnOffBtn.setChecked(false);
             }
         } else {
             for (int i = 0; i < bluetoothGatt.size(); i++) {
